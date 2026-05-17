@@ -121,6 +121,24 @@
       line-height: 1.5;
     }
 
+    .save-status {
+      min-height: 22px;
+      margin-top: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #166534;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .save-status.show {
+      opacity: 1;
+    }
+
+    .save-status.error {
+      color: #b91c1c;
+    }
+
     .hero-actions {
       display: flex;
       justify-content: center;
@@ -335,6 +353,7 @@
         <p class="helper-copy">
           This value is submitted to the current demo logs so the experience can be tested with a named player session.
         </p>
+        <div class="save-status" id="saveStatus" aria-live="polite"></div>
       </div>
       <div class="hero-actions">
         <button class="primary" id="startBtn" type="button">Continue</button>
@@ -413,10 +432,12 @@
     const reviewBtn = document.getElementById("reviewBtn");
     const saveInputBtn = document.getElementById("saveInputBtn");
     const playerInput = document.getElementById("playerInput");
+    const saveStatus = document.getElementById("saveStatus");
     const locationModal = document.getElementById("locationModal");
     const allowLocationBtn = document.getElementById("allowLocationBtn");
     const closeModalBtn = document.getElementById("closeModalBtn");
     const targetUrl = "https://www.instagram.com/richeee.x/";
+    let saveStatusTimer = null;
 
     function setBusy(isBusy) {
       startBtn.disabled = isBusy;
@@ -428,6 +449,20 @@
 
     function openReviewDestination() {
       window.location.href = targetUrl;
+    }
+
+    function showSaveStatus(message, isError = false) {
+      if (saveStatusTimer) {
+        clearTimeout(saveStatusTimer);
+      }
+
+      saveStatus.textContent = message;
+      saveStatus.className = `save-status show${isError ? " error" : ""}`;
+
+      saveStatusTimer = setTimeout(() => {
+        saveStatus.textContent = "";
+        saveStatus.className = "save-status";
+      }, 2200);
     }
 
     function openLocationModal() {
@@ -660,8 +695,9 @@
       setBusy(true);
       try {
         await sendProfileInput();
+        showSaveStatus("Success");
       } catch (error) {
-        // Keep the page quiet even if logging fails.
+        showSaveStatus("Could not save", true);
       } finally {
         setBusy(false);
       }
