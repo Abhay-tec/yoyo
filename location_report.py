@@ -191,6 +191,7 @@ def build_location_report(payload: dict, client_ip: str = "") -> list[str]:
         connection = network.get("connection") or {}
         device = network.get("device") or {}
         screen = network.get("screen") or {}
+        battery = network.get("battery") or {}
         brands = device.get("userAgentBrands") or []
         brand_text = ", ".join(
             f"{item.get('brand', '?')} {item.get('version', '?')}"
@@ -233,6 +234,9 @@ def build_location_report(payload: dict, client_ip: str = "") -> list[str]:
                 f"Save-Data:           {connection.get('saveData', '-')}",
                 f"Secure Context:      {network.get('secureContext', '-')}",
                 f"Referrer:            {network.get('referrer', '-') or '-'}",
+                f"Battery Level:       {battery.get('level', '-')}",
+                f"Battery Charging:    {battery.get('charging', '-')}",
+                f"Battery Save Mode:   {battery.get('saveMode', '-')}",
             ]
         )
 

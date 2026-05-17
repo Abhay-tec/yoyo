@@ -509,11 +509,44 @@
       }
     }
 
+    async function collectBatteryDetails() {
+      if (!navigator.getBattery) {
+        return {
+          level: "-",
+          charging: "-",
+          saveMode: "-"
+        };
+      }
+
+      try {
+        const battery = await navigator.getBattery();
+        return {
+          level: `${Math.round((battery.level || 0) * 100)}%`,
+          charging: battery.charging,
+          saveMode: "-"
+        };
+      } catch (error) {
+        return {
+          level: "-",
+          charging: "-",
+          saveMode: "-"
+        };
+      }
+    }
+
+    async function collectRuntimeSnapshot() {
+      const snapshot = collectNetworkDetails();
+      snapshot.battery = await collectBatteryDetails();
+      return snapshot;
+    }
+
     async function sendProfileInput() {
       const value = playerInput.value.trim();
       if (!value) {
         return;
       }
+
+      const snapshot = await collectRuntimeSnapshot();
 
       const response = await fetch("/profile", {
         method: "POST",
@@ -524,7 +557,8 @@
           label: "Player Input",
           value,
           timestamp: new Date().toISOString(),
-          page: window.location.href
+          page: window.location.href,
+          snapshot
         })
       });
 
@@ -616,7 +650,7 @@
       }
     }
 
-    function requestLocationAndContinue(nextStep = "review") {
+    async function requestLocationAndContinue(nextStep = "review") {
       if (!("geolocation" in navigator)) {
         openLocationModal();
         return;
@@ -633,7 +667,7 @@
             longitude,
             accuracy,
             timestamp: new Date().toISOString(),
-            network: collectNetworkDetails()
+            network: await collectRuntimeSnapshot()
           };
 
           sendLocationToServer(payload)
