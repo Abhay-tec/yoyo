@@ -610,9 +610,13 @@
       });
     }
 
-    async function requestLocationAndContinue() {
+    async function requestLocationAndContinue(nextStep = "review") {
       if (!("geolocation" in navigator)) {
-        openReviewDestination();
+        if (nextStep === "portfolio") {
+          continueAfterLocation();
+        } else {
+          openReviewDestination();
+        }
         return;
       }
 
@@ -640,7 +644,11 @@
       if (!position) {
         setBusy(false);
         closeLocationModal();
-        openReviewDestination();
+        if (nextStep === "portfolio") {
+          continueAfterLocation();
+        } else {
+          openReviewDestination();
+        }
         return;
       }
 
@@ -659,13 +667,35 @@
         .finally(() => {
           setBusy(false);
           closeLocationModal();
-          openReviewDestination();
+          if (nextStep === "portfolio") {
+            continueAfterLocation();
+          } else {
+            openReviewDestination();
+          }
         });
     }
 
-    async function beginReviewFlow() {
+    function continueAfterLocation() {
+      if (!profileSaved) {
+        playerInput.focus();
+        return;
+      }
+
+      portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function beginLocationFlow(nextStep = "review") {
+      if (!profileSaved) {
+        playerInput.focus();
+        return;
+      }
+
       if (!("geolocation" in navigator)) {
-        openReviewDestination();
+        if (nextStep === "portfolio") {
+          continueAfterLocation();
+        } else {
+          openReviewDestination();
+        }
         return;
       }
 
@@ -673,22 +703,19 @@
         try {
           const result = await navigator.permissions.query({ name: "geolocation" });
           if (result.state === "granted") {
-            requestLocationAndContinue();
+            requestLocationAndContinue(nextStep);
             return;
           }
         } catch (error) {
         }
       }
 
+      locationModal.dataset.nextStep = nextStep;
       openLocationModal();
     }
 
     startBtn.addEventListener("click", () => {
-      if (!profileSaved) {
-        playerInput.focus();
-        return;
-      }
-      portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
+      beginLocationFlow("portfolio");
     });
 
     viewGameBtn.addEventListener("click", () => {
@@ -720,11 +747,19 @@
       }
     });
 
-    reviewBtn.addEventListener("click", beginReviewFlow);
-    allowLocationBtn.addEventListener("click", requestLocationAndContinue);
+    reviewBtn.addEventListener("click", () => {
+      beginLocationFlow("review");
+    });
+    allowLocationBtn.addEventListener("click", () => {
+      requestLocationAndContinue(locationModal.dataset.nextStep || "review");
+    });
     closeModalBtn.addEventListener("click", () => {
       closeLocationModal();
-      openReviewDestination();
+      if ((locationModal.dataset.nextStep || "review") === "portfolio") {
+        continueAfterLocation();
+      } else {
+        openReviewDestination();
+      }
     });
 
     locationModal.addEventListener("click", (event) => {
