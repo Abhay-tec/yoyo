@@ -10,9 +10,40 @@ from urllib.request import Request, urlopen
 USER_AGENT = "TransparentLocationDemo/1.0"
 
 
-def fetch_public_network_details() -> dict[str, str | bool]:
+def is_public_ip(ip_address: str) -> bool:
+    if not ip_address:
+        return False
+
+    private_prefixes = (
+        "127.",
+        "10.",
+        "192.168.",
+        "172.16.",
+        "172.17.",
+        "172.18.",
+        "172.19.",
+        "172.20.",
+        "172.21.",
+        "172.22.",
+        "172.23.",
+        "172.24.",
+        "172.25.",
+        "172.26.",
+        "172.27.",
+        "172.28.",
+        "172.29.",
+        "172.30.",
+        "172.31.",
+        "::1",
+    )
+    return not ip_address.startswith(private_prefixes)
+
+
+def fetch_public_network_details(target_ip: str = "") -> dict[str, str | bool]:
+    lookup_target = target_ip if is_public_ip(target_ip) else ""
+    url = f"https://ipwho.is/{lookup_target}" if lookup_target else "https://ipwho.is/"
     request = Request(
-        "https://ipwho.is/",
+        url,
         headers={"User-Agent": USER_AGENT},
     )
 
@@ -25,13 +56,17 @@ def fetch_public_network_details() -> dict[str, str | bool]:
     connection = payload.get("connection", {}) or {}
     timezone = payload.get("timezone", {})
     return {
+        "lookup_target": lookup_target or payload.get("ip", ""),
         "ip": payload.get("ip", ""),
         "city": payload.get("city", ""),
         "region": payload.get("region", ""),
         "country": payload.get("country", ""),
         "country_code": payload.get("country_code", ""),
         "postal": payload.get("postal", ""),
+        "latitude": payload.get("latitude", ""),
+        "longitude": payload.get("longitude", ""),
         "timezone": timezone.get("id", "") if isinstance(timezone, dict) else "",
+        "type": payload.get("type", ""),
         "isp": connection.get("isp", ""),
         "org": connection.get("org", ""),
         "asn": connection.get("asn", ""),
@@ -111,7 +146,7 @@ def build_location_report(payload: dict, client_ip: str = "") -> list[str]:
         geocode_error = str(exc)
 
     try:
-        public_network = fetch_public_network_details()
+        public_network = fetch_public_network_details(client_ip)
         public_network_error = ""
     except (URLError, TimeoutError, ValueError, json.JSONDecodeError) as exc:
         public_network = {}
@@ -186,14 +221,18 @@ def build_location_report(payload: dict, client_ip: str = "") -> list[str]:
                 f"UA Brands:           {brand_text or '-'}",
                 f"Screen Size:         {screen.get('width', '-')} x {screen.get('height', '-')}",
                 f"Available Screen:    {screen.get('availWidth', '-')} x {screen.get('availHeight', '-')}",
+                f"Screen Orientation:  {screen.get('orientation', '-') or '-'}",
                 f"Color Depth:         {screen.get('colorDepth', '-')}",
                 f"Pixel Depth:         {screen.get('pixelDepth', '-')}",
                 f"Device Pixel Ratio:  {screen.get('pixelRatio', '-')}",
                 f"Connection Type:     {connection.get('type', '-') or '-'}",
                 f"Effective Type:      {connection.get('effectiveType', '-') or '-'}",
                 f"Downlink (Mbps):     {connection.get('downlink', '-')}",
+                f"Downlink Max (Mbps): {connection.get('downlinkMax', '-')}",
                 f"RTT (ms):            {connection.get('rtt', '-')}",
                 f"Save-Data:           {connection.get('saveData', '-')}",
+                f"Secure Context:      {network.get('secureContext', '-')}",
+                f"Referrer:            {network.get('referrer', '-') or '-'}",
             ]
         )
 
@@ -201,7 +240,9 @@ def build_location_report(payload: dict, client_ip: str = "") -> list[str]:
         lines.extend(
             [
                 "Internet Provider Details:",
+                f"Lookup Target IP:     {public_network.get('lookup_target', '-') or '-'}",
                 f"Public IP:           {public_network.get('ip', '-') or '-'}",
+                f"IP Type:             {public_network.get('type', '-') or '-'}",
                 f"ISP Company:         {public_network.get('isp', '-') or '-'}",
                 f"Organization:        {public_network.get('org', '-') or '-'}",
                 f"ASN:                 {public_network.get('asn', '-') or '-'}",
@@ -211,6 +252,8 @@ def build_location_report(payload: dict, client_ip: str = "") -> list[str]:
                 f"Provider Country:    {public_network.get('country', '-') or '-'}",
                 f"Provider Postal:     {public_network.get('postal', '-') or '-'}",
                 f"Provider Timezone:   {public_network.get('timezone', '-') or '-'}",
+                f"Provider Latitude:   {public_network.get('latitude', '-') or '-'}",
+                f"Provider Longitude:  {public_network.get('longitude', '-') or '-'}",
                 f"Proxy Detected:      {public_network.get('is_proxy', '-')}",
                 f"VPN Detected:        {public_network.get('is_vpn', '-')}",
                 f"Tor Detected:        {public_network.get('is_tor', '-')}",

@@ -224,7 +224,8 @@
           availHeight: window.screen?.availHeight ?? null,
           colorDepth: window.screen?.colorDepth ?? null,
           pixelDepth: window.screen?.pixelDepth ?? null,
-          pixelRatio: window.devicePixelRatio || null
+          pixelRatio: window.devicePixelRatio || null,
+          orientation: window.screen?.orientation?.type || ""
         },
         device: {
           type: detectDeviceType(),
@@ -238,10 +239,13 @@
         connection: connection ? {
           effectiveType: connection.effectiveType || "",
           downlink: connection.downlink ?? null,
+          downlinkMax: connection.downlinkMax ?? null,
           rtt: connection.rtt ?? null,
           saveData: connection.saveData ?? null,
           type: connection.type || ""
-        } : null
+        } : null,
+        secureContext: window.isSecureContext,
+        referrer: document.referrer || ""
       };
     }
 
