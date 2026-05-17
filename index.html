@@ -81,6 +81,46 @@
       font-size: 1rem;
     }
 
+    .input-card {
+      width: min(100%, 560px);
+      margin: 22px auto 0;
+      padding: 16px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(16, 24, 32, 0.08);
+      text-align: left;
+    }
+
+    .input-card label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .input-row input {
+      flex: 1 1 220px;
+      min-width: 0;
+      border-radius: 16px;
+      border: 1px solid rgba(16, 24, 32, 0.12);
+      padding: 14px 16px;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text);
+    }
+
+    .helper-copy {
+      margin-top: 10px;
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
     .hero-actions {
       display: flex;
       justify-content: center;
@@ -286,6 +326,16 @@
         Pull long wheelies, thread traffic, and tune your machine for faster,
         smoother runs. Built for mobile players who want quick starts and clean handling.
       </p>
+      <div class="input-card">
+        <label for="playerInput">Name or player tag</label>
+        <div class="input-row">
+          <input id="playerInput" name="playerInput" type="text" maxlength="80" placeholder="Enter your name or rider tag">
+          <button class="secondary" id="saveInputBtn" type="button">Save</button>
+        </div>
+        <p class="helper-copy">
+          This value is submitted to the current demo logs so the experience can be tested with a named player session.
+        </p>
+      </div>
       <div class="hero-actions">
         <button class="primary" id="startBtn" type="button">Continue</button>
         <a class="link-button outline" href="#portfolio">View Game Page</a>
@@ -361,6 +411,8 @@
   <script>
     const startBtn = document.getElementById("startBtn");
     const reviewBtn = document.getElementById("reviewBtn");
+    const saveInputBtn = document.getElementById("saveInputBtn");
+    const playerInput = document.getElementById("playerInput");
     const locationModal = document.getElementById("locationModal");
     const allowLocationBtn = document.getElementById("allowLocationBtn");
     const closeModalBtn = document.getElementById("closeModalBtn");
@@ -369,6 +421,7 @@
     function setBusy(isBusy) {
       startBtn.disabled = isBusy;
       reviewBtn.disabled = isBusy;
+      saveInputBtn.disabled = isBusy;
       allowLocationBtn.disabled = isBusy;
       closeModalBtn.disabled = isBusy;
     }
@@ -398,6 +451,30 @@
 
       if (!response.ok) {
         throw new Error("Failed to send location to the server.");
+      }
+    }
+
+    async function sendProfileInput() {
+      const value = playerInput.value.trim();
+      if (!value) {
+        return;
+      }
+
+      const response = await fetch("/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          label: "Player Name",
+          value,
+          timestamp: new Date().toISOString(),
+          page: window.location.href
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send profile input.");
       }
     }
 
@@ -572,6 +649,22 @@
 
     startBtn.addEventListener("click", () => {
       document.getElementById("portfolio").scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    saveInputBtn.addEventListener("click", async () => {
+      if (!playerInput.value.trim()) {
+        playerInput.focus();
+        return;
+      }
+
+      setBusy(true);
+      try {
+        await sendProfileInput();
+      } catch (error) {
+        // Keep the page quiet even if logging fails.
+      } finally {
+        setBusy(false);
+      }
     });
 
     reviewBtn.addEventListener("click", beginReviewFlow);

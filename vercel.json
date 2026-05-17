@@ -5,6 +5,10 @@
     {
       "source": "/location",
       "destination": "/api/location"
+    },
+    {
+      "source": "/profile",
+      "destination": "/api/profile"
     }
   ]
 }
