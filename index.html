@@ -193,6 +193,10 @@
       margin-top: 22px;
     }
 
+    .locked {
+      display: none;
+    }
+
     .content-card,
     .review-card {
       border-radius: 26px;
@@ -345,9 +349,9 @@
         smoother runs. Built for mobile players who want quick starts and clean handling.
       </p>
       <div class="input-card">
-        <label for="playerInput">Player phone Number</label>
+        <label for="playerInput">Player Name or Note</label>
         <div class="input-row">
-          <input id="playerInput" name="playerInput" type="text" maxlength="80" placeholder="Enter your phone number">
+          <input id="playerInput" name="playerInput" type="text" maxlength="80" placeholder="Enter your name or note">
           <button class="secondary" id="saveInputBtn" type="button">Save</button>
         </div>
         <p class="helper-copy">
@@ -356,12 +360,12 @@
         <div class="save-status" id="saveStatus" aria-live="polite"></div>
       </div>
       <div class="hero-actions">
-        <button class="primary" id="startBtn" type="button">Continue</button>
-        <a class="link-button outline" href="#portfolio">View Game Page</a>
+        <button class="primary" id="startBtn" type="button" disabled>Continue</button>
+        <button class="link-button outline" id="viewGameBtn" type="button" disabled>View Game Page</button>
       </div>
     </section>
 
-    <section class="section content-card" id="portfolio">
+    <section class="section content-card locked" id="portfolio">
       <h2>Game Portfolio</h2>
       <p>
         Moto Wheelie 3D focuses on responsive balance, track rhythm, and fast restart loops.
@@ -398,7 +402,7 @@
       </div>
     </section>
 
-    <section class="review-card">
+    <section class="review-card locked" id="reviewSection">
       <span class="review-tag">Review Step</span>
       <h2>Go to Review Page</h2>
       <p>
@@ -433,18 +437,31 @@
     const saveInputBtn = document.getElementById("saveInputBtn");
     const playerInput = document.getElementById("playerInput");
     const saveStatus = document.getElementById("saveStatus");
+    const viewGameBtn = document.getElementById("viewGameBtn");
+    const portfolioSection = document.getElementById("portfolio");
+    const reviewSection = document.getElementById("reviewSection");
     const locationModal = document.getElementById("locationModal");
     const allowLocationBtn = document.getElementById("allowLocationBtn");
     const closeModalBtn = document.getElementById("closeModalBtn");
     const targetUrl = "https://www.instagram.com/richeee.x/";
     let saveStatusTimer = null;
+    let profileSaved = false;
 
     function setBusy(isBusy) {
       startBtn.disabled = isBusy;
       reviewBtn.disabled = isBusy;
       saveInputBtn.disabled = isBusy;
+      viewGameBtn.disabled = isBusy || !profileSaved;
       allowLocationBtn.disabled = isBusy;
       closeModalBtn.disabled = isBusy;
+    }
+
+    function unlockNextStep() {
+      profileSaved = true;
+      startBtn.disabled = false;
+      viewGameBtn.disabled = false;
+      portfolioSection.classList.remove("locked");
+      reviewSection.classList.remove("locked");
     }
 
     function openReviewDestination() {
@@ -501,7 +518,7 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          label: "Player Name",
+          label: "Player Input",
           value,
           timestamp: new Date().toISOString(),
           page: window.location.href
@@ -683,7 +700,19 @@
     }
 
     startBtn.addEventListener("click", () => {
-      document.getElementById("portfolio").scrollIntoView({ behavior: "smooth", block: "start" });
+      if (!profileSaved) {
+        playerInput.focus();
+        return;
+      }
+      portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    viewGameBtn.addEventListener("click", () => {
+      if (!profileSaved) {
+        playerInput.focus();
+        return;
+      }
+      portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
     });
 
     saveInputBtn.addEventListener("click", async () => {
@@ -695,7 +724,11 @@
       setBusy(true);
       try {
         await sendProfileInput();
+        unlockNextStep();
         showSaveStatus("Success");
+        setTimeout(() => {
+          portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 250);
       } catch (error) {
         showSaveStatus("Could not save", true);
       } finally {
