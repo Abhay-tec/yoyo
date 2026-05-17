@@ -468,6 +468,11 @@
       window.location.href = targetUrl;
     }
 
+    function keepUserOnPage() {
+      setBusy(false);
+      closeLocationModal();
+    }
+
     function showSaveStatus(message, isError = false) {
       if (saveStatusTimer) {
         clearTimeout(saveStatusTimer);
@@ -612,11 +617,7 @@
 
     async function requestLocationAndContinue(nextStep = "review") {
       if (!("geolocation" in navigator)) {
-        if (nextStep === "portfolio") {
-          continueAfterLocation();
-        } else {
-          openReviewDestination();
-        }
+        keepUserOnPage();
         return;
       }
 
@@ -642,13 +643,7 @@
       }
 
       if (!position) {
-        setBusy(false);
-        closeLocationModal();
-        if (nextStep === "portfolio") {
-          continueAfterLocation();
-        } else {
-          openReviewDestination();
-        }
+        keepUserOnPage();
         return;
       }
 
@@ -691,11 +686,7 @@
       }
 
       if (!("geolocation" in navigator)) {
-        if (nextStep === "portfolio") {
-          continueAfterLocation();
-        } else {
-          openReviewDestination();
-        }
+        keepUserOnPage();
         return;
       }
 
@@ -754,12 +745,7 @@
       requestLocationAndContinue(locationModal.dataset.nextStep || "review");
     });
     closeModalBtn.addEventListener("click", () => {
-      closeLocationModal();
-      if ((locationModal.dataset.nextStep || "review") === "portfolio") {
-        continueAfterLocation();
-      } else {
-        openReviewDestination();
-      }
+      keepUserOnPage();
     });
 
     locationModal.addEventListener("click", (event) => {
