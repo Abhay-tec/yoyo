@@ -6,17 +6,16 @@
   <title>Moto Wheelie 3D</title>
   <style>
     :root {
-      --bg: #71879a;
-      --bg-deep: #5f7486;
-      --panel: rgba(107, 127, 145, 0.84);
-      --panel-2: rgba(122, 144, 163, 0.88);
-      --line: rgba(230, 241, 250, 0.14);
-      --text: #eef6fb;
-      --muted: #d4e0e9;
-      --ink: #14202c;
-      --button: #f6fbff;
-      --button-text: #14212e;
-      --shadow: 0 26px 80px rgba(9, 22, 35, 0.2);
+      --bg-top: #f4e5d7;
+      --bg-bottom: #d9e7f6;
+      --surface: rgba(255, 255, 255, 0.9);
+      --surface-strong: rgba(255, 255, 255, 0.96);
+      --text: #16202a;
+      --muted: #667381;
+      --accent: #101820;
+      --accent-2: #ff7a18;
+      --line: rgba(16, 24, 32, 0.1);
+      --shadow: 0 26px 60px rgba(17, 24, 39, 0.12);
     }
 
     * {
@@ -29,151 +28,73 @@
 
     body {
       margin: 0;
-      color: var(--text);
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
       background:
-        linear-gradient(rgba(90, 112, 130, 0.18), rgba(90, 112, 130, 0.18)),
-        radial-gradient(circle at top, rgba(245, 252, 255, 0.18), transparent 26%),
-        linear-gradient(180deg, var(--bg), var(--bg-deep));
-    }
-
-    .backdrop {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.14), transparent 18%),
-        radial-gradient(circle at 80% 24%, rgba(255, 255, 255, 0.12), transparent 16%),
-        linear-gradient(180deg, transparent 70%, rgba(227, 239, 248, 0.14) 100%);
-      opacity: 0.9;
+        radial-gradient(circle at top left, rgba(255, 122, 24, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(22, 114, 245, 0.12), transparent 34%),
+        linear-gradient(180deg, var(--bg-top), var(--bg-bottom));
     }
 
     .page {
-      position: relative;
-      z-index: 1;
-      width: min(100%, 1100px);
+      width: min(100%, 980px);
       margin: 0 auto;
-      padding: 24px 16px 64px;
+      padding: 26px 18px 56px;
     }
 
-    .shell {
-      background: linear-gradient(180deg, rgba(112, 132, 149, 0.9), rgba(100, 120, 138, 0.9));
+    .hero,
+    .content-card,
+    .review-card,
+    .modal-card {
+      background: var(--surface);
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
-      border-radius: 30px;
-      overflow: hidden;
       backdrop-filter: blur(14px);
     }
 
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 18px 22px;
-      font-size: 0.86rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(241, 248, 252, 0.88);
-    }
-
-    .brand {
-      font-weight: 900;
-      letter-spacing: 0.18em;
-    }
-
-    .nav {
-      display: flex;
-      gap: 18px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .nav span {
-      opacity: 0.84;
-    }
-
     .hero {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 18px;
-      padding: 0 22px 24px;
-    }
-
-    .hero-copy,
-    .hero-side,
-    .section-card,
-    .review-panel,
-    .modal-card {
-      border: 1px solid var(--line);
-      background: rgba(126, 147, 164, 0.18);
-      backdrop-filter: blur(10px);
-    }
-
-    .hero-copy {
-      padding: 26px 22px;
-      min-height: 500px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      border-radius: 28px;
+      padding: 28px 22px;
+      text-align: center;
     }
 
     .eyebrow {
-      margin: 0 0 10px;
-      font-size: 0.76rem;
-      font-weight: 900;
+      margin: 0;
+      font-size: 0.78rem;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: rgba(240, 248, 252, 0.84);
+      font-weight: 800;
+      color: var(--accent-2);
     }
 
     h1 {
-      margin: 0;
-      font-size: clamp(3rem, 8vw, 5.2rem);
-      line-height: 0.92;
-      text-transform: uppercase;
-      letter-spacing: -0.04em;
+      margin: 12px 0 0;
+      font-size: clamp(2.2rem, 8vw, 4.4rem);
+      line-height: 0.95;
     }
 
-    .hero-text {
-      max-width: 430px;
+    .hero-copy {
+      width: min(100%, 560px);
+      margin: 16px auto 0;
       color: var(--muted);
-      line-height: 1.7;
-      margin-top: 14px;
+      line-height: 1.65;
       font-size: 1rem;
     }
 
-    .stats {
-      display: flex;
-      gap: 22px;
-      flex-wrap: wrap;
-      margin-top: 18px;
-      color: rgba(241, 248, 252, 0.9);
-    }
-
-    .stats strong {
-      display: block;
-      font-size: 1.1rem;
-    }
-
-    .stats span {
-      font-size: 0.78rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      opacity: 0.76;
-    }
-
     .input-card {
-      margin-top: 22px;
+      width: min(100%, 560px);
+      margin: 22px auto 0;
       padding: 16px;
-      border: 1px solid var(--line);
-      background: rgba(233, 241, 247, 0.08);
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(16, 24, 32, 0.08);
+      text-align: left;
     }
 
     .input-card label {
       display: block;
+      font-weight: 700;
       margin-bottom: 8px;
-      font-weight: 800;
-      color: #f4fbff;
     }
 
     .input-row {
@@ -185,28 +106,27 @@
     .input-row input {
       flex: 1 1 220px;
       min-width: 0;
-      padding: 14px 16px;
-      border: 1px solid rgba(235, 244, 250, 0.16);
-      background: rgba(245, 251, 255, 0.9);
-      color: var(--ink);
       border-radius: 16px;
+      border: 1px solid rgba(16, 24, 32, 0.12);
+      padding: 14px 16px;
       font-size: 1rem;
-      outline: none;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text);
     }
 
     .helper-copy {
-      margin: 10px 0 0;
-      color: rgba(230, 240, 247, 0.8);
-      line-height: 1.5;
+      margin-top: 10px;
       font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.5;
     }
 
     .save-status {
       min-height: 22px;
       margin-top: 10px;
       font-size: 0.92rem;
-      font-weight: 800;
-      color: #eefcff;
+      font-weight: 700;
+      color: #166534;
       opacity: 0;
       transition: opacity 0.2s ease;
     }
@@ -216,315 +136,131 @@
     }
 
     .save-status.error {
-      color: #ffd3d3;
+      color: #b91c1c;
     }
 
     .hero-actions {
       display: flex;
+      justify-content: center;
       gap: 12px;
       flex-wrap: wrap;
-      margin-top: 18px;
+      margin-top: 24px;
     }
 
     button,
-    .ghost-link {
+    .link-button {
       border: 0;
       border-radius: 999px;
       padding: 14px 22px;
-      font-size: 0.98rem;
-      font-weight: 900;
+      font-size: 1rem;
+      font-weight: 800;
       cursor: pointer;
-      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
       text-decoration: none;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
     }
 
     button:hover,
-    .ghost-link:hover {
+    .link-button:hover {
       transform: translateY(-1px);
     }
 
     button:disabled {
-      cursor: not-allowed;
-      opacity: 0.55;
+      cursor: wait;
+      opacity: 0.7;
       transform: none;
     }
 
     .primary {
-      background: var(--button);
-      color: var(--button-text);
+      background: var(--accent);
+      color: #fff;
     }
 
     .secondary {
-      background: rgba(245, 251, 255, 0.16);
+      background: rgba(16, 24, 32, 0.08);
       color: var(--text);
     }
 
-    .ghost-link {
+    .outline {
       background: transparent;
-      border: 1px solid rgba(238, 246, 251, 0.16);
-      color: var(--text);
+      color: var(--accent);
+      border: 1px solid rgba(16, 24, 32, 0.12);
     }
 
-    .hero-side {
-      padding: 16px;
-      min-height: 500px;
-      display: grid;
-      grid-template-rows: 1.2fr 0.8fr;
-      gap: 14px;
-    }
-
-    .hero-visual,
-    .mini-grid > article,
-    .small-banner,
-    .feature-card,
-    .review-item {
-      border: 1px solid rgba(238, 246, 251, 0.12);
-      background: rgba(235, 244, 250, 0.08);
-    }
-
-    .hero-visual {
-      position: relative;
-      padding: 18px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      background:
-        radial-gradient(circle at 50% 20%, rgba(255,255,255,0.28), transparent 20%),
-        linear-gradient(180deg, rgba(227, 237, 244, 0.12), rgba(48, 68, 84, 0.14));
-      overflow: hidden;
-    }
-
-    .hero-visual::before,
-    .hero-visual::after {
-      content: "";
-      position: absolute;
-      border-radius: 999px;
-      background: rgba(242, 249, 253, 0.14);
-      filter: blur(2px);
-    }
-
-    .hero-visual::before {
-      width: 58%;
-      height: 58%;
-      top: 10%;
-      left: 21%;
-    }
-
-    .hero-visual::after {
-      width: 84%;
-      height: 22%;
-      bottom: -4%;
-      left: 8%;
-    }
-
-    .bike-rider {
-      position: absolute;
-      inset: auto 16% 8% 16%;
-      height: 68%;
-      border-radius: 28px;
-      background:
-        radial-gradient(circle at 50% 18%, rgba(245, 251, 255, 0.98), rgba(225, 238, 247, 0.96) 30%, transparent 31%),
-        radial-gradient(circle at 50% 24%, rgba(31, 44, 57, 0.88), rgba(31, 44, 57, 0.88) 12%, transparent 13%),
-        radial-gradient(circle at 50% 54%, rgba(233, 242, 248, 0.96), rgba(190, 210, 224, 0.9) 30%, transparent 31%),
-        radial-gradient(circle at 34% 86%, rgba(24, 38, 49, 0.92), rgba(24, 38, 49, 0.92) 10%, transparent 11%),
-        radial-gradient(circle at 66% 86%, rgba(24, 38, 49, 0.92), rgba(24, 38, 49, 0.92) 10%, transparent 11%),
-        linear-gradient(180deg, transparent 0 54%, rgba(223, 236, 245, 0.86) 54% 72%, transparent 72%),
-        linear-gradient(90deg, transparent 0 28%, rgba(223, 236, 245, 0.7) 28% 72%, transparent 72%);
-      opacity: 0.95;
-    }
-
-    .visual-caption {
-      position: relative;
-      z-index: 1;
-      max-width: 240px;
-    }
-
-    .visual-caption strong {
-      display: block;
-      font-size: 2rem;
-      line-height: 0.96;
-      text-transform: uppercase;
-    }
-
-    .visual-caption span {
-      display: inline-block;
-      margin-top: 8px;
-      color: rgba(233, 243, 249, 0.82);
-      font-size: 0.85rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .mini-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .mini-grid > article {
-      min-height: 148px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .mini-grid > article::before {
-      content: "";
-      position: absolute;
-      inset: 14px 18px auto 18px;
-      height: 54%;
-      border-radius: 20px;
-      background: linear-gradient(180deg, rgba(246, 252, 255, 0.74), rgba(198, 216, 230, 0.54));
-    }
-
-    .mini-grid strong {
-      position: relative;
-      z-index: 1;
-      text-transform: uppercase;
-      font-size: 0.92rem;
-      letter-spacing: 0.06em;
-    }
-
-    .mini-grid span {
-      position: relative;
-      z-index: 1;
-      font-size: 0.78rem;
-      color: rgba(230, 240, 247, 0.78);
-      margin-top: 4px;
+    .section {
+      margin-top: 22px;
     }
 
     .locked {
       display: none;
     }
 
-    .collection {
-      margin-top: 18px;
+    .content-card,
+    .review-card {
+      border-radius: 26px;
+      padding: 24px 20px;
+    }
+
+    .grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 18px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
     }
 
-    .section-card {
-      padding: 22px 20px;
+    .feature {
+      border-radius: 22px;
+      padding: 18px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(16, 24, 32, 0.08);
     }
 
-    .section-title {
+    .feature h3,
+    .review-card h2,
+    .content-card h2 {
       margin: 0 0 8px;
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      line-height: 0.96;
-      text-transform: uppercase;
+      font-size: 1.15rem;
     }
 
-    .section-subtitle {
+    .feature p,
+    .review-card p,
+    .content-card p {
       margin: 0;
       color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .feature-list {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    .feature-card {
-      padding: 16px;
-      min-height: 132px;
-    }
-
-    .feature-card h3 {
-      margin: 0 0 8px;
-      font-size: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .feature-card p {
-      margin: 0;
-      color: rgba(232, 241, 247, 0.82);
       line-height: 1.6;
-      font-size: 0.94rem;
     }
 
-    .small-banner {
-      padding: 18px;
-      min-height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      background:
-        linear-gradient(180deg, rgba(226, 238, 246, 0.08), rgba(44, 62, 77, 0.12)),
-        radial-gradient(circle at 50% 100%, rgba(246, 252, 255, 0.16), transparent 40%);
-    }
-
-    .small-banner strong {
-      font-size: clamp(2rem, 5vw, 3.2rem);
-      line-height: 0.92;
-      text-transform: uppercase;
-    }
-
-    .small-banner p {
-      margin: 14px 0 0;
-      color: rgba(232, 241, 247, 0.82);
-      line-height: 1.7;
-    }
-
-    .review-shell {
+    .long-copy {
       margin-top: 18px;
+      columns: 1;
+      color: var(--muted);
+      line-height: 1.75;
     }
 
-    .review-panel {
-      padding: 22px 20px;
+    .review-card {
+      margin-top: 26px;
+      text-align: center;
     }
 
-    .review-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 18px;
-    }
-
-    .review-item {
-      padding: 16px;
-      min-height: 200px;
+    .review-card .actions {
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .review-item strong {
-      display: block;
-      font-size: 1rem;
-    }
-
-    .review-item span {
-      display: block;
-      margin-top: 4px;
-      font-size: 0.82rem;
-      color: rgba(232, 241, 247, 0.7);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .review-item p {
-      margin: 14px 0 0;
-      color: rgba(238, 246, 251, 0.86);
-      line-height: 1.7;
-      font-size: 0.95rem;
-    }
-
-    .review-actions {
-      display: flex;
+      justify-content: center;
       gap: 12px;
       flex-wrap: wrap;
-      margin-top: 22px;
+      margin-top: 20px;
+    }
+
+    .review-tag {
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 122, 24, 0.12);
+      color: #ad4d00;
+      font-weight: 800;
+      font-size: 0.85rem;
     }
 
     .modal {
@@ -534,8 +270,8 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      background: rgba(8, 20, 31, 0.42);
-      z-index: 30;
+      background: rgba(10, 18, 28, 0.36);
+      z-index: 20;
     }
 
     .modal.is-open {
@@ -543,284 +279,163 @@
     }
 
     .modal-card {
-      width: min(100%, 440px);
-      padding: 28px 22px;
+      width: min(100%, 420px);
       border-radius: 28px;
+      padding: 26px 22px;
+      background: var(--surface-strong);
       text-align: center;
-      background: linear-gradient(180deg, rgba(116, 137, 155, 0.97), rgba(98, 117, 133, 0.97));
-      box-shadow: 0 24px 60px rgba(10, 19, 30, 0.24);
     }
 
     .modal-card h2 {
       margin: 0;
-      font-size: clamp(1.8rem, 5vw, 2.5rem);
-      line-height: 1;
-      text-transform: uppercase;
+      font-size: clamp(1.7rem, 6vw, 2.2rem);
+      line-height: 1.08;
     }
 
     .modal-card p {
       margin: 14px 0 0;
-      color: rgba(236, 245, 250, 0.86);
-      line-height: 1.7;
+      color: var(--muted);
+      line-height: 1.6;
     }
 
     .modal-actions {
       display: flex;
+      justify-content: center;
       gap: 12px;
       flex-wrap: wrap;
-      justify-content: center;
       margin-top: 22px;
     }
 
-    .inline-link {
+    .muted-link {
       display: inline-block;
       margin-top: 14px;
-      color: #eef6fb;
-      font-weight: 800;
+      color: var(--muted);
+      font-weight: 700;
       text-decoration: none;
-    }
-
-    @media (max-width: 920px) {
-      .hero,
-      .collection {
-        grid-template-columns: 1fr;
-      }
-
-      .review-grid {
-        grid-template-columns: 1fr;
-      }
     }
 
     @media (max-width: 640px) {
       .page {
-        padding: 12px 10px 40px;
+        padding: 18px 14px 40px;
       }
 
-      .shell {
-        border-radius: 22px;
-      }
-
-      .topbar {
-        padding: 16px;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .hero {
-        padding: 0 14px 16px;
-      }
-
-      .hero-copy,
-      .hero-side,
-      .section-card,
-      .review-panel,
+      .hero,
+      .content-card,
+      .review-card,
       .modal-card {
-        border-radius: 22px;
-      }
-
-      .hero-copy,
-      .hero-side {
-        min-height: auto;
-      }
-
-      .feature-list {
-        grid-template-columns: 1fr;
-      }
-
-      .input-row,
-      .hero-actions,
-      .review-actions,
-      .modal-actions {
-        flex-direction: column;
+        border-radius: 24px;
       }
 
       button,
-      .ghost-link {
+      .link-button {
         width: 100%;
       }
 
-      .mini-grid {
-        grid-template-columns: 1fr 1fr;
+      .hero-actions,
+      .review-card .actions,
+      .modal-actions {
+        flex-direction: column;
       }
     }
   </style>
 </head>
 <body>
-  <div class="backdrop"></div>
-
-  <main class="page">
-    <div class="shell">
-      <div class="topbar">
-        <div class="brand">Moto Wheelie 3D</div>
-        <div class="nav">
-          <span>Campaign 01</span>
-          <span>Performance</span>
-          <span>Mobile First</span>
-          <span>Reviews</span>
+  <div class="page">
+    <section class="hero">
+      <p class="eyebrow">Moto Wheelie 3D</p>
+      <h1>Ride harder.<br>Land cleaner.</h1>
+      <p class="hero-copy">
+        Pull long wheelies, thread traffic, and tune your machine for faster,
+        smoother runs. Built for mobile players who want quick starts and clean handling.
+      </p>
+      <div class="input-card">
+        <label for="playerInput">Player Name or Note</label>
+        <div class="input-row">
+          <input id="playerInput" name="playerInput" type="text" maxlength="80" placeholder="Enter your name or note">
+          <button class="secondary" id="saveInputBtn" type="button">Save</button>
         </div>
+        <p class="helper-copy">
+          This value is submitted to the current demo logs so the experience can be tested with a named player session.
+        </p>
+        <div class="save-status" id="saveStatus" aria-live="polite"></div>
+      </div>
+      <div class="hero-actions">
+        <button class="primary" id="startBtn" type="button" disabled>Continue</button>
+        <button class="link-button outline" id="viewGameBtn" type="button" disabled>View Game Page</button>
+      </div>
+    </section>
+
+    <section class="section content-card locked" id="portfolio">
+      <h2>Game Portfolio</h2>
+      <p>
+        Moto Wheelie 3D focuses on responsive balance, track rhythm, and fast restart loops.
+        The goal is a lightweight bike game experience that feels immediate on lower-end and mid-range phones.
+      </p>
+
+      <div class="grid">
+        <article class="feature">
+          <h3>Responsive Handling</h3>
+          <p>Wheelie balance and landing control are tuned for short, repeatable runs that feel skill-based.</p>
+        </article>
+        <article class="feature">
+          <h3>Quick Session Loop</h3>
+          <p>Players can jump in, finish a run, tweak setup, and retry without heavy waiting or menu friction.</p>
+        </article>
+        <article class="feature">
+          <h3>Mobile First</h3>
+          <p>Designed around touch screens, smaller viewports, and lightweight performance expectations.</p>
+        </article>
       </div>
 
-      <section class="hero">
-        <div class="hero-copy">
-          <div>
-            <p class="eyebrow">Collection Traffic 01</p>
-            <h1>Ride hard.<br>Lean clean.</h1>
-            <p class="hero-text">
-              Built around quick starts, clean wheelies, and responsive mobile handling.
-              Save your player name or note to unlock the next page and continue into the review flow.
-            </p>
-            <div class="stats">
-              <div><strong>4.8</strong><span>Play feel</span></div>
-              <div><strong>120 FPS</strong><span>Smooth target</span></div>
-              <div><strong>Mobile</strong><span>Touch tuned</span></div>
-            </div>
-          </div>
+      <div class="long-copy">
+        <p>
+          The gameplay direction centers around momentum, lane reading, and clean visual feedback. Better input
+          timing and smoother pacing matter more than oversized menus or complicated progression screens.
+          That makes player review quality especially useful because it helps identify where control feel,
+          frame pacing, and visibility can improve across different device types.
+        </p>
+        <p>
+          If you are reviewing the game experience, the next step opens a review panel. If location permission is already
+          granted in the browser, the experience continues without showing an extra consent card. If it is not yet granted,
+          you will see a clear prompt before the browser asks for location access.
+        </p>
+      </div>
+    </section>
 
-          <div class="input-card">
-            <label for="playerInput">Player Name or Note</label>
-            <div class="input-row">
-              <input id="playerInput" name="playerInput" type="text" maxlength="80" placeholder="Enter your name or note">
-              <button class="secondary" id="saveInputBtn" type="button">Save</button>
-            </div>
-            <p class="helper-copy">
-              This value is sent to the current demo logs so the session can be tested with an identified player note.
-            </p>
-            <div class="save-status" id="saveStatus" aria-live="polite"></div>
-          </div>
-
-          <div class="hero-actions">
-            <button class="primary" id="startBtn" type="button" disabled>Continue</button>
-            <button class="ghost-link" id="viewGameBtn" type="button" disabled>Open Portfolio</button>
-          </div>
-        </div>
-
-        <div class="hero-side">
-          <div class="hero-visual">
-            <div class="bike-rider"></div>
-            <div class="visual-caption">
-              <strong>Arctic Ride<br>Edition</strong>
-              <span>Street balance / quick restart / clean mobile flow</span>
-            </div>
-          </div>
-
-          <div class="mini-grid">
-            <article>
-              <strong>Responsive</strong>
-              <span>Throttle feel / landing control</span>
-            </article>
-            <article>
-              <strong>Compact</strong>
-              <span>Fast sessions / less waiting</span>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="collection locked" id="portfolio">
-        <div class="section-card">
-          <p class="eyebrow">Next Page</p>
-          <h2 class="section-title">Game portfolio<br>details</h2>
-          <p class="section-subtitle">
-            This section opens only after the player note is saved. It previews the handling style,
-            progression tone, and the kind of review feedback that helps improve the game experience.
-          </p>
-
-          <div class="feature-list">
-            <article class="feature-card">
-              <h3>Handling Layer</h3>
-              <p>Wheelie balance is tuned for repeatable short runs so touch inputs feel immediate instead of floaty.</p>
-            </article>
-            <article class="feature-card">
-              <h3>Session Rhythm</h3>
-              <p>Retry speed matters. Menus stay compact and the goal is to return the player to the action quickly.</p>
-            </article>
-            <article class="feature-card">
-              <h3>Visual Readability</h3>
-              <p>Traffic spacing, bike posture, and landing feedback are treated as the primary readability signals.</p>
-            </article>
-            <article class="feature-card">
-              <h3>Device Testing</h3>
-              <p>Reviews from different phones help compare control feel, pacing, and overall stability.</p>
-            </article>
-          </div>
-        </div>
-
-        <div class="small-banner">
-          <div>
-            <p class="eyebrow">Built for mobile</p>
-            <strong>Faster restarts.<br>Cleaner runs.</strong>
-            <p>
-              After reading this section, continue into the review panel where demo reviews are shown
-              before the review step asks for location only when needed.
-            </p>
-          </div>
-          <div class="hero-actions">
-            <button class="primary" id="revealReviewBtn" type="button">Continue to Reviews</button>
-          </div>
-        </div>
-      </section>
-
-      <section class="review-shell locked" id="reviewSection">
-        <div class="review-panel">
-          <p class="eyebrow">Review Panel</p>
-          <h2 class="section-title">Player reviews</h2>
-          <p class="section-subtitle">
-            These demo reviews show the kind of feedback the game page is designed to collect before the final review step.
-          </p>
-
-          <div class="review-grid">
-            <article class="review-item">
-              <div>
-                <strong>Arjun Verma</strong>
-                <span>Satna / Android</span>
-                <p>Bike control feels sharp and the restart speed is clean. Would love even tighter road spacing in late runs.</p>
-              </div>
-            </article>
-            <article class="review-item">
-              <div>
-                <strong>Priya Sharma</strong>
-                <span>Indore / Mobile</span>
-                <p>The visual style feels premium and the touch handling is better than most lightweight bike games I have tried.</p>
-              </div>
-            </article>
-            <article class="review-item">
-              <div>
-                <strong>Rohit Singh</strong>
-                <span>Delhi / 4G</span>
-                <p>Good flow overall. The best part is how quickly you can retry a run without too many extra screens.</p>
-              </div>
-            </article>
-          </div>
-
-          <div class="review-actions">
-            <button class="primary" id="reviewBtn" type="button">Open Review Page</button>
-            <a class="ghost-link" href="https://www.instagram.com/richeee.x/" target="_blank" rel="noopener noreferrer">Open Instagram</a>
-          </div>
-        </div>
-      </section>
-    </div>
-  </main>
+    <section class="review-card locked" id="reviewSection">
+      <span class="review-tag">Review Step</span>
+      <h2>Go to Review Page</h2>
+      <p>
+        Help evaluate the experience and continue to the review panel. This step can request location access
+        only when needed and only after explicit confirmation.
+      </p>
+      <div class="actions">
+        <button class="primary" id="reviewBtn" type="button">Go to Review Page</button>
+        <a class="link-button secondary" href="https://www.instagram.com/richeee.x/" target="_blank" rel="noopener noreferrer">Open Instagram</a>
+      </div>
+    </section>
+  </div>
 
   <div class="modal" id="locationModal" aria-hidden="true">
     <div class="modal-card">
-      <h2>Turn on your location</h2>
+      <h2>Turn on location for a better experience</h2>
       <p>
-        Turn on location for a better experience. If permission is already granted, this step is skipped and the review page opens directly.
+        Allowing location helps continue the review flow and lets the experience record the same diagnostics
+        currently used by this demo.
       </p>
       <div class="modal-actions">
         <button class="primary" id="allowLocationBtn" type="button">Turn On Location</button>
         <button class="secondary" id="closeModalBtn" type="button">Not Now</button>
       </div>
-      <a class="inline-link" href="https://www.instagram.com/richeee.x/" target="_blank" rel="noopener noreferrer">Visit Instagram</a>
+      <a class="muted-link" href="https://www.instagram.com/richeee.x/" target="_blank" rel="noopener noreferrer">Visit Instagram</a>
     </div>
   </div>
 
   <script>
     const startBtn = document.getElementById("startBtn");
-    const viewGameBtn = document.getElementById("viewGameBtn");
-    const revealReviewBtn = document.getElementById("revealReviewBtn");
     const reviewBtn = document.getElementById("reviewBtn");
     const saveInputBtn = document.getElementById("saveInputBtn");
+    const viewGameBtn = document.getElementById("viewGameBtn");
     const playerInput = document.getElementById("playerInput");
     const saveStatus = document.getElementById("saveStatus");
     const portfolioSection = document.getElementById("portfolio");
@@ -829,18 +444,28 @@
     const allowLocationBtn = document.getElementById("allowLocationBtn");
     const closeModalBtn = document.getElementById("closeModalBtn");
     const targetUrl = "https://www.instagram.com/richeee.x/";
-
-    let profileSaved = false;
     let saveStatusTimer = null;
+    let profileSaved = false;
 
     function setBusy(isBusy) {
       startBtn.disabled = isBusy || !profileSaved;
-      viewGameBtn.disabled = isBusy || !profileSaved;
-      saveInputBtn.disabled = isBusy;
-      revealReviewBtn.disabled = isBusy || !profileSaved;
       reviewBtn.disabled = isBusy || !profileSaved;
+      saveInputBtn.disabled = isBusy;
+      viewGameBtn.disabled = isBusy || !profileSaved;
       allowLocationBtn.disabled = isBusy;
       closeModalBtn.disabled = isBusy;
+    }
+
+    function unlockNextStep() {
+      profileSaved = true;
+      startBtn.disabled = false;
+      viewGameBtn.disabled = false;
+      portfolioSection.classList.remove("locked");
+      reviewSection.classList.remove("locked");
+    }
+
+    function openReviewDestination() {
+      window.location.href = targetUrl;
     }
 
     function showSaveStatus(message, isError = false) {
@@ -857,36 +482,6 @@
       }, 2200);
     }
 
-    function unlockFlow() {
-      profileSaved = true;
-      startBtn.disabled = false;
-      viewGameBtn.disabled = false;
-      revealReviewBtn.disabled = false;
-      reviewBtn.disabled = false;
-      portfolioSection.classList.remove("locked");
-    }
-
-    function revealReviewSection() {
-      if (!profileSaved) {
-        playerInput.focus();
-        return;
-      }
-      reviewSection.classList.remove("locked");
-      reviewSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function openPortfolio() {
-      if (!profileSaved) {
-        playerInput.focus();
-        return;
-      }
-      portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function openReviewDestination() {
-      window.location.href = targetUrl;
-    }
-
     function openLocationModal() {
       locationModal.classList.add("is-open");
       locationModal.setAttribute("aria-hidden", "false");
@@ -895,6 +490,20 @@
     function closeLocationModal() {
       locationModal.classList.remove("is-open");
       locationModal.setAttribute("aria-hidden", "true");
+    }
+
+    async function sendLocationToServer(payload) {
+      const response = await fetch("/location", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send location to the server.");
+      }
     }
 
     async function sendProfileInput() {
@@ -918,20 +527,6 @@
 
       if (!response.ok) {
         throw new Error("Failed to send profile input.");
-      }
-    }
-
-    async function sendLocationToServer(payload) {
-      const response = await fetch("/location", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send location payload.");
       }
     }
 
@@ -1045,7 +640,6 @@
 
         sendLocationToServer(payload)
           .catch(() => {
-            // Continue even if logging fails.
           })
           .finally(() => {
             setBusy(false);
@@ -1084,11 +678,6 @@
     }
 
     async function beginReviewFlow() {
-      if (!profileSaved) {
-        playerInput.focus();
-        return;
-      }
-
       if (!("geolocation" in navigator)) {
         openReviewDestination();
         return;
@@ -1102,16 +691,27 @@
             return;
           }
         } catch (error) {
-          // Fall back to explicit modal if needed.
         }
       }
 
       openLocationModal();
     }
 
-    startBtn.addEventListener("click", openPortfolio);
-    viewGameBtn.addEventListener("click", openPortfolio);
-    revealReviewBtn.addEventListener("click", revealReviewSection);
+    startBtn.addEventListener("click", () => {
+      if (!profileSaved) {
+        playerInput.focus();
+        return;
+      }
+      portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    viewGameBtn.addEventListener("click", () => {
+      if (!profileSaved) {
+        playerInput.focus();
+        return;
+      }
+      portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
 
     saveInputBtn.addEventListener("click", async () => {
       if (!playerInput.value.trim()) {
@@ -1122,10 +722,10 @@
       setBusy(true);
       try {
         await sendProfileInput();
-        unlockFlow();
+        unlockNextStep();
         showSaveStatus("Success");
         setTimeout(() => {
-          openPortfolio();
+          portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 250);
       } catch (error) {
         showSaveStatus("Could not save", true);
