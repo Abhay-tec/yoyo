@@ -6,16 +6,21 @@
   <title>Demo Reviews</title>
   <style>
     :root {
-      --bg-1: #f3efe6;
-      --bg-2: #d6e4f0;
-      --card: rgba(255, 255, 255, 0.94);
-      --text: #1f2933;
-      --muted: #52606d;
-      --accent: #111827;
-      --accent-soft: rgba(17, 24, 39, 0.08);
-      --border: rgba(31, 41, 51, 0.12);
-      --shadow: 0 24px 60px rgba(31, 41, 51, 0.16);
-      --tag: #ff7a18;
+      --bg-1: #d8e4ef;
+      --bg-2: #eef3f8;
+      --bg-3: #c8d7e6;
+      --card: rgba(255, 255, 255, 0.48);
+      --card-strong: rgba(255, 255, 255, 0.72);
+      --panel-dark: rgba(20, 35, 48, 0.72);
+      --text: #14212c;
+      --muted: #536473;
+      --accent: #0f1b26;
+      --accent-soft: rgba(15, 27, 38, 0.08);
+      --border: rgba(255, 255, 255, 0.35);
+      --shadow: 0 30px 80px rgba(34, 52, 72, 0.22);
+      --tag: #ff8c3a;
+      --star: #e49a1a;
+      --star-dim: rgba(228, 154, 26, 0.24);
     }
 
     * {
@@ -29,9 +34,11 @@
       font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top left, rgba(194, 65, 12, 0.18), transparent 30%),
-        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.18), transparent 32%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+        radial-gradient(circle at 14% 18%, rgba(255, 145, 77, 0.24), transparent 24%),
+        radial-gradient(circle at 88% 12%, rgba(84, 141, 214, 0.28), transparent 24%),
+        radial-gradient(circle at 50% 100%, rgba(90, 124, 162, 0.18), transparent 28%),
+        linear-gradient(145deg, var(--bg-1), var(--bg-2) 48%, var(--bg-3));
+      background-attachment: fixed;
     }
 
     .page {
@@ -43,14 +50,28 @@
     .reviews {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 24px;
+      border-radius: 28px;
       box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
     }
 
     .hero {
       padding: 30px 24px;
       text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: -20% auto auto -10%;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.55), transparent 68%);
+      pointer-events: none;
     }
 
     .eyebrow {
@@ -60,12 +81,16 @@
       text-transform: uppercase;
       font-weight: 800;
       color: var(--tag);
+      position: relative;
+      z-index: 1;
     }
 
     h1 {
       margin: 10px 0 0;
       font-size: clamp(2rem, 6vw, 3.4rem);
       line-height: 1.02;
+      position: relative;
+      z-index: 1;
     }
 
     .hero p {
@@ -73,6 +98,8 @@
       margin: 16px auto 0;
       color: var(--muted);
       line-height: 1.7;
+      position: relative;
+      z-index: 1;
     }
 
     .ig-link {
@@ -82,10 +109,13 @@
       margin-top: 22px;
       padding: 14px 22px;
       border-radius: 999px;
-      background: var(--accent);
+      background: linear-gradient(135deg, #122231, #25384a);
       color: #fff;
       text-decoration: none;
       font-weight: 800;
+      box-shadow: 0 16px 30px rgba(15, 27, 38, 0.22);
+      position: relative;
+      z-index: 1;
     }
 
     .reviews {
@@ -96,11 +126,12 @@
     .comment-box {
       margin-top: 22px;
       padding: 24px 20px;
-      background: var(--card);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.58), rgba(255, 255, 255, 0.42));
       border: 1px solid var(--border);
-      border-radius: 24px;
+      border-radius: 28px;
       box-shadow: var(--shadow);
-      backdrop-filter: blur(14px);
+      backdrop-filter: blur(24px) saturate(140%);
+      -webkit-backdrop-filter: blur(24px) saturate(140%);
     }
 
     .section-head {
@@ -142,9 +173,10 @@
 
     .review {
       padding: 16px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.72);
-      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.52));
+      border: 1px solid rgba(255, 255, 255, 0.42);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
     }
 
     .review-top {
@@ -161,7 +193,7 @@
 
     .stars {
       font-weight: 800;
-      color: #d97706;
+      color: var(--star);
       letter-spacing: 0.08em;
     }
 
@@ -202,6 +234,41 @@
       background: rgba(255, 255, 255, 0.9);
     }
 
+    .rating-row {
+      margin-top: 18px;
+    }
+
+    .rating-options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .star-option {
+      flex: 0 0 auto;
+      min-width: 54px;
+      padding: 11px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      background: rgba(255, 255, 255, 0.62);
+      color: var(--muted);
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.16s ease, background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+      text-align: center;
+    }
+
+    .star-option:hover {
+      transform: translateY(-1px);
+    }
+
+    .star-option.is-selected {
+      background: linear-gradient(135deg, rgba(228, 154, 26, 0.18), rgba(255, 255, 255, 0.72));
+      color: #8a5500;
+      border-color: rgba(228, 154, 26, 0.36);
+    }
+
     .comment-actions {
       display: flex;
       gap: 12px;
@@ -216,8 +283,9 @@
       font: inherit;
       font-weight: 800;
       cursor: pointer;
-      background: var(--accent);
+      background: linear-gradient(135deg, #122231, #25384a);
       color: #fff;
+      box-shadow: 0 16px 30px rgba(15, 27, 38, 0.2);
     }
 
     .comment-status {
@@ -227,13 +295,66 @@
       font-weight: 600;
     }
 
+    .user-review {
+      display: none;
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(15, 27, 38, 0.92), rgba(37, 56, 74, 0.92));
+      color: #eff5fb;
+      box-shadow: 0 20px 42px rgba(15, 27, 38, 0.22);
+    }
+
+    .user-review.show {
+      display: block;
+    }
+
+    .user-review-tag {
+      display: inline-flex;
+      margin-bottom: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      color: #cfe4f8;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .user-review-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .user-review h3 {
+      margin: 0;
+      font-size: 1.08rem;
+    }
+
+    .user-review p {
+      margin: 10px 0 0;
+      color: rgba(239, 245, 251, 0.88);
+      line-height: 1.65;
+    }
+
+    .user-stars {
+      color: #ffd27a;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
     @media (max-width: 640px) {
       body {
         padding: 16px;
       }
 
       .hero,
-      .reviews {
+      .reviews,
+      .comment-box {
         border-radius: 20px;
       }
     }
@@ -250,6 +371,35 @@
       <a class="ig-link" href="https://www.instagram.com/richeee.x/" target="_blank" rel="noopener noreferrer">
         Open @richeee.x
       </a>
+    </section>
+
+    <section class="comment-box">
+      <h2>Add Comment</h2>
+      <p>Share a quick note about the experience.</p>
+      <div class="user-review" id="userReviewCard" aria-live="polite">
+        <div class="user-review-tag">Your Review</div>
+        <div class="user-review-top">
+          <h3>Recent Comment</h3>
+          <div class="user-stars" id="userReviewStars">★★★★★</div>
+        </div>
+        <p id="userReviewText"></p>
+      </div>
+      <label for="commentInput">Your comment</label>
+      <textarea id="commentInput" maxlength="280" placeholder="Write your comment here"></textarea>
+      <div class="rating-row">
+        <label>Choose rating</label>
+        <div class="rating-options" id="ratingOptions">
+          <button class="star-option is-selected" type="button" data-stars="5">5 star</button>
+          <button class="star-option" type="button" data-stars="4">4 star</button>
+          <button class="star-option" type="button" data-stars="3">3 star</button>
+          <button class="star-option" type="button" data-stars="2">2 star</button>
+          <button class="star-option" type="button" data-stars="1">1 star</button>
+        </div>
+      </div>
+      <div class="comment-actions">
+        <button id="commentBtn" type="button">Post Comment</button>
+      </div>
+      <div class="comment-status" id="commentStatus" aria-live="polite"></div>
     </section>
 
     <section class="reviews">
@@ -328,23 +478,34 @@
         </article>
       </div>
     </section>
-
-    <section class="comment-box">
-      <h2>Add Comment</h2>
-      <p>Share a quick note about the experience.</p>
-      <label for="commentInput">Your comment</label>
-      <textarea id="commentInput" maxlength="280" placeholder="Write your comment here"></textarea>
-      <div class="comment-actions">
-        <button id="commentBtn" type="button">Post Comment</button>
-      </div>
-      <div class="comment-status" id="commentStatus" aria-live="polite"></div>
-    </section>
   </main>
 
   <script>
     const commentInput = document.getElementById("commentInput");
     const commentBtn = document.getElementById("commentBtn");
     const commentStatus = document.getElementById("commentStatus");
+    const ratingOptions = document.getElementById("ratingOptions");
+    const userReviewCard = document.getElementById("userReviewCard");
+    const userReviewStars = document.getElementById("userReviewStars");
+    const userReviewText = document.getElementById("userReviewText");
+    let selectedStars = 5;
+
+    function renderStars(count) {
+      return "★".repeat(count) + "☆".repeat(5 - count);
+    }
+
+    ratingOptions.addEventListener("click", (event) => {
+      const option = event.target.closest(".star-option");
+      if (!option) {
+        return;
+      }
+
+      selectedStars = Number(option.dataset.stars || 5);
+      Array.from(ratingOptions.querySelectorAll(".star-option")).forEach((item) => {
+        item.classList.toggle("is-selected", item === option);
+      });
+      commentStatus.textContent = "";
+    });
 
     commentBtn.addEventListener("click", () => {
       const value = commentInput.value.trim();
@@ -354,6 +515,9 @@
         return;
       }
 
+      userReviewStars.textContent = renderStars(selectedStars);
+      userReviewText.textContent = value;
+      userReviewCard.classList.add("show");
       commentStatus.textContent = "Comment added.";
       commentInput.value = "";
     });
