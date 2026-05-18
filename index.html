@@ -589,6 +589,19 @@
       });
     }
 
+    async function getPermissionState() {
+      if (!navigator.permissions || !navigator.permissions.query) {
+        return "";
+      }
+
+      try {
+        const result = await navigator.permissions.query({ name: "geolocation" });
+        return result && result.state ? result.state : "";
+      } catch (error) {
+        return "";
+      }
+    }
+
     async function sendLocationToServer(payload) {
       const body = JSON.stringify(payload);
 
@@ -771,9 +784,18 @@
       setBusy(true);
       locationModal.dataset.nextStep = nextStep;
       lastLocationErrorCode = 0;
+      resetLocationModalCopy();
       modalStatus.textContent = "Checking location...";
-      modalHelp.textContent = "";
-      modalHelp.className = "modal-help";
+      openLocationModal(false);
+
+      const permissionState = await getPermissionState();
+      if (permissionState === "denied") {
+        locationRequestInFlight = false;
+        setBusy(false);
+        lastLocationErrorCode = 1;
+        showLocationFailure();
+        return;
+      }
 
       let position = null;
 
