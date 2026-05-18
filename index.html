@@ -560,12 +560,6 @@
       modalHelp.className = "modal-help show";
     }
 
-    function getPosition(options) {
-      return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, options);
-      });
-    }
-
     async function sendLocationToServer(payload) {
       const body = JSON.stringify(payload);
 
@@ -732,47 +726,14 @@
       }
     }
 
-    async function requestLocationAndContinue(nextStep = "review") {
-      if (!("geolocation" in navigator)) {
-        lastLocationErrorCode = 2;
-        openLocationModal();
-        showLocationHelp();
-        return;
-      }
+    function handleLocationFailure(errorCode) {
+      lastLocationErrorCode = errorCode || 0;
+      setBusy(false);
+      openLocationModal();
+      showLocationHelp();
+    }
 
-      setBusy(true);
-      locationModal.dataset.nextStep = nextStep;
-      lastLocationErrorCode = 0;
-
-      let position = null;
-
-      try {
-        position = await getPosition({
-          enableHighAccuracy: true,
-          timeout: 12000,
-          maximumAge: 0
-        });
-      } catch (error) {
-        lastLocationErrorCode = error && error.code ? error.code : 0;
-        try {
-          position = await getPosition({
-            enableHighAccuracy: false,
-            timeout: 10000,
-            maximumAge: 120000
-          });
-        } catch (fallbackError) {
-          lastLocationErrorCode = fallbackError && fallbackError.code ? fallbackError.code : lastLocationErrorCode;
-          position = null;
-        }
-      }
-
-      if (!position) {
-        setBusy(false);
-        openLocationModal();
-        showLocationHelp();
-        return;
-      }
-
+    async function finalizeLocationSuccess(position, nextStep) {
       locationApproved = true;
       const { latitude, longitude, accuracy } = position.coords;
       const payload = {
@@ -789,6 +750,46 @@
 
       setBusy(false);
       proceedAfterLocation(nextStep);
+    }
+
+    function requestLocationAndContinue(nextStep = "review") {
+      if (!("geolocation" in navigator)) {
+        lastLocationErrorCode = 2;
+        openLocationModal();
+        showLocationHelp();
+        return;
+      }
+
+      setBusy(true);
+      locationModal.dataset.nextStep = nextStep;
+      lastLocationErrorCode = 0;
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          finalizeLocationSuccess(position, nextStep);
+        },
+        (error) => {
+          const firstErrorCode = error && error.code ? error.code : 0;
+
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              finalizeLocationSuccess(position, nextStep);
+            },
+            (fallbackError) => {
+              handleLocationFailure((fallbackError && fallbackError.code) || firstErrorCode);
+            },
+            {
+              enableHighAccuracy: false,
+              timeout: 10000,
+              maximumAge: 120000
+            }
+          );
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 12000,
+          maximumAge: 0
+        }
+      );
     }
 
     function continueAfterLocation() {
