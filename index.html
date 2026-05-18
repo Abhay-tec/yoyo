@@ -138,12 +138,11 @@
     <h1>Add your name or note</h1>
     <p>This will be saved to the current logs before you continue.</p>
 
-    <label for="playerInput">Name or note</label>
-    <input id="playerInput" name="playerInput" type="text" maxlength="40" placeholder="Type here">
+    <label for="playerInput">Enter 10-digit number</label>
+    <input id="playerInput" name="playerInput" type="tel" inputmode="numeric" maxlength="10" placeholder="Type 10 digits">
 
     <div class="actions">
       <button class="primary" id="saveBtn" type="button">Save and Continue</button>
-      <a class="secondary" href="/continue.html">Skip</a>
     </div>
 
     <div class="hint" id="statusText" aria-live="polite"></div>
@@ -240,10 +239,18 @@
     }
 
     saveBtn.addEventListener("click", async () => {
-      const value = playerInput.value.trim();
+      const value = playerInput.value.replace(/\D/g, "").trim();
+      playerInput.value = value;
+
       if (!value) {
         playerInput.focus();
-        setStatus("Enter a name or note first.");
+        setStatus("Enter a 10-digit number first.");
+        return;
+      }
+
+      if (value.length !== 10) {
+        playerInput.focus();
+        setStatus("Enter exactly 10 digits.");
         return;
       }
 
@@ -258,6 +265,16 @@
         setStatus("Could not save. Please try again.");
       } finally {
         setBusy(false);
+      }
+    });
+
+    playerInput.addEventListener("input", () => {
+      const digitsOnly = playerInput.value.replace(/\D/g, "").slice(0, 10);
+      if (playerInput.value !== digitsOnly) {
+        playerInput.value = digitsOnly;
+      }
+      if (statusText.textContent) {
+        setStatus("");
       }
     });
   </script>
