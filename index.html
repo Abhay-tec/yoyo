@@ -660,7 +660,7 @@
       locationModal.dataset.nextStep = nextStep;
 
       navigator.geolocation.getCurrentPosition(
-        (position) => {
+        async (position) => {
           const { latitude, longitude, accuracy } = position.coords;
           const payload = {
             latitude,
