@@ -443,7 +443,7 @@
   <div class="modal" id="locationModal" aria-hidden="true">
     <div class="modal-card">
       <h2>Allow location to continue</h2>
-      <p>
+      <p id="modalIntro">
         Tap the button below to allow location in your browser and continue.
       </p>
       <div class="modal-status" id="modalStatus"></div>
@@ -466,6 +466,7 @@
     const portfolioSection = document.getElementById("portfolio");
     const reviewSection = document.getElementById("reviewSection");
     const locationModal = document.getElementById("locationModal");
+    const modalIntro = document.getElementById("modalIntro");
     const modalStatus = document.getElementById("modalStatus");
     const modalHelp = document.getElementById("modalHelp");
     const allowLocationBtn = document.getElementById("allowLocationBtn");
@@ -516,6 +517,7 @@
     }
 
     function openLocationModal() {
+      modalIntro.textContent = "Tap the button below to allow location in your browser and continue.";
       modalStatus.textContent = "";
       modalHelp.textContent = "";
       modalHelp.className = "modal-help";
@@ -774,7 +776,8 @@
 
       if (!position) {
         setBusy(false);
-        modalStatus.textContent = "Location not available yet.";
+        modalIntro.textContent = "Make sure your location is on. Swipe down or check your location settings to process the review page.";
+        modalStatus.textContent = "Location is still off or unavailable.";
         openLocationModal();
         showLocationHelp();
         return;
