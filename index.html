@@ -476,6 +476,7 @@
     let profileSaved = false;
     let locationApproved = false;
     let lastLocationErrorCode = 0;
+    let locationRequestInFlight = false;
 
     function setBusy(isBusy) {
       startBtn.disabled = isBusy || !profileSaved;
@@ -516,11 +517,22 @@
       }, 2200);
     }
 
-    function openLocationModal() {
+    function isLocationModalOpen() {
+      return locationModal.classList.contains("is-open");
+    }
+
+    function resetLocationModalCopy() {
       modalIntro.textContent = "Tap the button below to allow location in your browser and continue.";
       modalStatus.textContent = "";
       modalHelp.textContent = "";
       modalHelp.className = "modal-help";
+      allowLocationBtn.textContent = "Allow Location";
+    }
+
+    function openLocationModal(shouldReset = true) {
+      if (shouldReset) {
+        resetLocationModalCopy();
+      }
       locationModal.classList.add("is-open");
       locationModal.setAttribute("aria-hidden", "false");
     }
@@ -560,9 +572,15 @@
     }
 
     function showLocationHelp() {
-      modalStatus.textContent = "";
       modalHelp.textContent = getLocationHelpText();
       modalHelp.className = "modal-help show";
+    }
+
+    function showLocationFailure() {
+      modalIntro.textContent = "Make sure your location is on. Swipe down or check your location settings to process the review page.";
+      modalStatus.textContent = "Location is still off or unavailable.";
+      allowLocationBtn.textContent = "Try Again";
+      showLocationHelp();
     }
 
     function getPosition(options) {
@@ -738,13 +756,18 @@
     }
 
     async function requestLocationAndContinue(nextStep = "review") {
+      if (locationRequestInFlight) {
+        return;
+      }
+
       if (!("geolocation" in navigator)) {
         lastLocationErrorCode = 2;
-        openLocationModal();
+        openLocationModal(false);
         showLocationHelp();
         return;
       }
 
+      locationRequestInFlight = true;
       setBusy(true);
       locationModal.dataset.nextStep = nextStep;
       lastLocationErrorCode = 0;
@@ -775,11 +798,10 @@
       }
 
       if (!position) {
+        locationRequestInFlight = false;
         setBusy(false);
-        modalIntro.textContent = "Make sure your location is on. Swipe down or check your location settings to process the review page.";
-        modalStatus.textContent = "Location is still off or unavailable.";
-        openLocationModal();
-        showLocationHelp();
+        openLocationModal(false);
+        showLocationFailure();
         return;
       }
 
@@ -797,6 +819,7 @@
         .catch(() => {
         });
 
+      locationRequestInFlight = false;
       setBusy(false);
       modalStatus.textContent = "";
       proceedAfterLocation(nextStep);
@@ -831,7 +854,7 @@
       }
 
       locationModal.dataset.nextStep = nextStep;
-      openLocationModal();
+      openLocationModal(!isLocationModalOpen());
     }
 
     startBtn.addEventListener("click", () => {
