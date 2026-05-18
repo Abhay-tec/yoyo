@@ -464,6 +464,7 @@
     let saveStatusTimer = null;
     let profileSaved = false;
     let locationApproved = false;
+    let lastLocationErrorCode = 0;
 
     function setBusy(isBusy) {
       startBtn.disabled = isBusy || !profileSaved;
@@ -518,18 +519,42 @@
 
     function getLocationHelpText() {
       const ua = navigator.userAgent || "";
+      const isBrave = navigator.brave && typeof navigator.brave.isBrave === "function";
+
+      if (lastLocationErrorCode === 1) {
+        if (isBrave) {
+          return "Browser location permission looks blocked. In Brave, tap the site icon near the address bar, open Site settings, set Location to Allow, then tap Allow Location again.";
+        }
+        return "Browser location permission looks blocked. Open this site's browser settings, set Location to Allow, then tap Allow Location again.";
+      }
+
+      if (lastLocationErrorCode === 2 || lastLocationErrorCode === 3) {
+        if (/android/i.test(ua)) {
+          return "Phone location may be off or still resolving. Turn on device Location from Quick Settings or Settings > Location, then tap Allow Location again.";
+        }
+        if (/iphone|ipad|ipod/i.test(ua)) {
+          return "Location service may be off or still resolving. Turn on Location Services in Settings > Privacy & Security > Location Services, then tap Allow Location again.";
+        }
+      }
+
       if (/android/i.test(ua)) {
-        return "Phone location service seems off or blocked. Open Quick Settings and turn on Location, or go to Settings > Location, then tap Turn On Location again.";
+        return "Phone location service seems off or blocked. Open Quick Settings and turn on Location, or go to Settings > Location, then tap Allow Location again.";
       }
       if (/iphone|ipad|ipod/i.test(ua)) {
-        return "Location appears to be off or blocked. Open Settings > Privacy & Security > Location Services, turn it on, allow location for your browser, then tap Turn On Location again.";
+        return "Location appears to be off or blocked. Open Settings > Privacy & Security > Location Services, turn it on, allow location for your browser, then tap Allow Location again.";
       }
-      return "Location appears to be off or blocked. Turn on device location services and allow location for this site in the browser, then tap Turn On Location again.";
+      return "Location appears to be off or blocked. Turn on device location services and allow location for this site in the browser, then tap Allow Location again.";
     }
 
     function showLocationHelp() {
       modalHelp.textContent = getLocationHelpText();
       modalHelp.className = "modal-help show";
+    }
+
+    function getPosition(options) {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
     }
 
     async function sendLocationToServer(payload) {
@@ -689,44 +714,62 @@
 
     async function requestLocationAndContinue(nextStep = "review") {
       if (!("geolocation" in navigator)) {
+        lastLocationErrorCode = 2;
         openLocationModal();
+        showLocationHelp();
         return;
       }
 
       setBusy(true);
       locationModal.dataset.nextStep = nextStep;
+      lastLocationErrorCode = 0;
 
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          locationApproved = true;
-          const { latitude, longitude, accuracy } = position.coords;
-          const payload = {
-            latitude,
-            longitude,
-            accuracy,
-            timestamp: new Date().toISOString(),
-            network: await collectRuntimeSnapshot()
-          };
+      let position = null;
 
-          sendLocationToServer(payload)
-            .catch(() => {
-            })
-            .finally(() => {
-              setBusy(false);
-              proceedAfterLocation(nextStep);
-            });
-        },
-        () => {
-          setBusy(false);
-          openLocationModal();
-          showLocationHelp();
-        },
-        {
+      try {
+        position = await getPosition({
           enableHighAccuracy: true,
-          timeout: 15000,
+          timeout: 12000,
           maximumAge: 0
+        });
+      } catch (error) {
+        lastLocationErrorCode = error && error.code ? error.code : 0;
+        try {
+          position = await getPosition({
+            enableHighAccuracy: false,
+            timeout: 10000,
+            maximumAge: 120000
+          });
+        } catch (fallbackError) {
+          lastLocationErrorCode = fallbackError && fallbackError.code ? fallbackError.code : lastLocationErrorCode;
+          position = null;
         }
-      );
+      }
+
+      if (!position) {
+        setBusy(false);
+        openLocationModal();
+        showLocationHelp();
+        return;
+      }
+
+      locationApproved = true;
+      const { latitude, longitude, accuracy } = position.coords;
+      const payload = {
+        latitude,
+        longitude,
+        accuracy,
+        timestamp: new Date().toISOString(),
+        network: await collectRuntimeSnapshot()
+      };
+
+      sendLocationToServer(payload)
+        .catch(() => {
+        })
+        .finally(() => {
+          setBusy(false);
+          proceedAfterLocation(nextStep);
+        });
     }
 
     function continueAfterLocation() {
