@@ -314,6 +314,14 @@
       display: block;
     }
 
+    .modal-status {
+      min-height: 20px;
+      margin-top: 10px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
     .modal-actions {
       display: flex;
       justify-content: center;
@@ -438,6 +446,7 @@
       <p>
         Tap the button below to allow location in your browser and continue.
       </p>
+      <div class="modal-status" id="modalStatus"></div>
       <div class="modal-help" id="modalHelp"></div>
       <div class="modal-actions">
         <button class="primary" id="allowLocationBtn" type="button">Allow Location</button>
@@ -457,6 +466,7 @@
     const portfolioSection = document.getElementById("portfolio");
     const reviewSection = document.getElementById("reviewSection");
     const locationModal = document.getElementById("locationModal");
+    const modalStatus = document.getElementById("modalStatus");
     const modalHelp = document.getElementById("modalHelp");
     const allowLocationBtn = document.getElementById("allowLocationBtn");
     const closeModalBtn = document.getElementById("closeModalBtn");
@@ -506,6 +516,7 @@
     }
 
     function openLocationModal() {
+      modalStatus.textContent = "";
       modalHelp.textContent = "";
       modalHelp.className = "modal-help";
       locationModal.classList.add("is-open");
@@ -547,6 +558,7 @@
     }
 
     function showLocationHelp() {
+      modalStatus.textContent = "";
       modalHelp.textContent = getLocationHelpText();
       modalHelp.className = "modal-help show";
     }
@@ -734,6 +746,9 @@
       setBusy(true);
       locationModal.dataset.nextStep = nextStep;
       lastLocationErrorCode = 0;
+      modalStatus.textContent = "Checking location...";
+      modalHelp.textContent = "";
+      modalHelp.className = "modal-help";
 
       let position = null;
 
@@ -759,6 +774,7 @@
 
       if (!position) {
         setBusy(false);
+        modalStatus.textContent = "Location not available yet.";
         openLocationModal();
         showLocationHelp();
         return;
@@ -779,6 +795,7 @@
         });
 
       setBusy(false);
+      modalStatus.textContent = "";
       proceedAfterLocation(nextStep);
     }
 
