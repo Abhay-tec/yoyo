@@ -823,8 +823,7 @@
         navigator.permissions.query({ name: "geolocation" })
           .then((result) => {
             if (result.state === "granted") {
-              locationApproved = true;
-              continueByStep(nextStep);
+              requestLocationAndContinue(nextStep);
             } else {
               requestLocationAndContinue(nextStep);
             }
