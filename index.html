@@ -781,6 +781,14 @@
       portfolioSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
 
+    function continueByStep(nextStep) {
+      if (nextStep === "portfolio") {
+        continueAfterLocation();
+      } else {
+        openReviewDestination();
+      }
+    }
+
     function beginLocationFlow(nextStep = "review") {
       if (!profileSaved) {
         playerInput.focus();
@@ -788,7 +796,7 @@
       }
 
       if (locationApproved) {
-        requestLocationAndContinue(nextStep);
+        continueByStep(nextStep);
         return;
       }
 
@@ -797,7 +805,7 @@
           .then((result) => {
             if (result.state === "granted") {
               locationApproved = true;
-              requestLocationAndContinue(nextStep);
+              continueByStep(nextStep);
             } else {
               requestLocationAndContinue(nextStep);
             }
