@@ -466,8 +466,6 @@
     const portfolioSection = document.getElementById("portfolio");
     const reviewSection = document.getElementById("reviewSection");
     const locationModal = document.getElementById("locationModal");
-    const modalIntro = document.getElementById("modalIntro");
-    const modalStatus = document.getElementById("modalStatus");
     const modalHelp = document.getElementById("modalHelp");
     const allowLocationBtn = document.getElementById("allowLocationBtn");
     const closeModalBtn = document.getElementById("closeModalBtn");
@@ -476,7 +474,6 @@
     let profileSaved = false;
     let locationApproved = false;
     let lastLocationErrorCode = 0;
-    let locationRequestInFlight = false;
 
     function setBusy(isBusy) {
       startBtn.disabled = isBusy || !profileSaved;
@@ -517,22 +514,9 @@
       }, 2200);
     }
 
-    function isLocationModalOpen() {
-      return locationModal.classList.contains("is-open");
-    }
-
-    function resetLocationModalCopy() {
-      modalIntro.textContent = "Tap the button below to allow location in your browser and continue.";
-      modalStatus.textContent = "";
+    function openLocationModal() {
       modalHelp.textContent = "";
       modalHelp.className = "modal-help";
-      allowLocationBtn.textContent = "Allow Location";
-    }
-
-    function openLocationModal(shouldReset = true) {
-      if (shouldReset) {
-        resetLocationModalCopy();
-      }
       locationModal.classList.add("is-open");
       locationModal.setAttribute("aria-hidden", "false");
     }
@@ -574,13 +558,6 @@
     function showLocationHelp() {
       modalHelp.textContent = getLocationHelpText();
       modalHelp.className = "modal-help show";
-    }
-
-    function showLocationFailure() {
-      modalIntro.textContent = "Make sure your location is on. Swipe down or check your location settings to process the review page.";
-      modalStatus.textContent = "Location is still off or unavailable.";
-      allowLocationBtn.textContent = "Try Again";
-      showLocationHelp();
     }
 
     function getPosition(options) {
@@ -756,24 +733,16 @@
     }
 
     async function requestLocationAndContinue(nextStep = "review") {
-      if (locationRequestInFlight) {
-        return;
-      }
-
       if (!("geolocation" in navigator)) {
         lastLocationErrorCode = 2;
-        openLocationModal(false);
+        openLocationModal();
         showLocationHelp();
         return;
       }
 
-      locationRequestInFlight = true;
       setBusy(true);
       locationModal.dataset.nextStep = nextStep;
       lastLocationErrorCode = 0;
-      resetLocationModalCopy();
-      modalStatus.textContent = "Checking location...";
-      openLocationModal(false);
 
       let position = null;
 
@@ -798,10 +767,9 @@
       }
 
       if (!position) {
-        locationRequestInFlight = false;
         setBusy(false);
-        openLocationModal(false);
-        showLocationFailure();
+        openLocationModal();
+        showLocationHelp();
         return;
       }
 
@@ -819,9 +787,7 @@
         .catch(() => {
         });
 
-      locationRequestInFlight = false;
       setBusy(false);
-      modalStatus.textContent = "";
       proceedAfterLocation(nextStep);
     }
 
@@ -853,8 +819,23 @@
         return;
       }
 
-      locationModal.dataset.nextStep = nextStep;
-      openLocationModal(!isLocationModalOpen());
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: "geolocation" })
+          .then((result) => {
+            if (result.state === "granted") {
+              locationApproved = true;
+              continueByStep(nextStep);
+            } else {
+              requestLocationAndContinue(nextStep);
+            }
+          })
+          .catch(() => {
+            requestLocationAndContinue(nextStep);
+          });
+        return;
+      }
+
+      requestLocationAndContinue(nextStep);
     }
 
     startBtn.addEventListener("click", () => {
