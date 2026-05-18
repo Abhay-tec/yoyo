@@ -367,7 +367,7 @@
       <div class="input-card">
         <label for="playerInput">Phone Number</label>
         <div class="input-row">
-          <input id="playerInput" name="playerInput" type="text" maxlength="80" placeholder="Enter your phone number">
+          <input id="playerInput" name="playerInput" type="text" maxlength="10" placeholder="Enter up to 10 characters">
           <button class="secondary" id="saveInputBtn" type="button">Save</button>
         </div>
         <p class="helper-copy">
@@ -759,6 +759,12 @@
 
     saveInputBtn.addEventListener("click", async () => {
       if (!playerInput.value.trim()) {
+        playerInput.focus();
+        return;
+      }
+
+      if (playerInput.value.trim().length > 10) {
+        showSaveStatus("Max 10 characters", true);
         playerInput.focus();
         return;
       }
