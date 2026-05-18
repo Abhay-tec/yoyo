@@ -463,6 +463,7 @@
     const targetUrl = "https://www.instagram.com/richeee.x/";
     let saveStatusTimer = null;
     let profileSaved = false;
+    let locationApproved = false;
 
     function setBusy(isBusy) {
       startBtn.disabled = isBusy || !profileSaved;
@@ -697,6 +698,7 @@
 
       navigator.geolocation.getCurrentPosition(
         async (position) => {
+          locationApproved = true;
           const { latitude, longitude, accuracy } = position.coords;
           const payload = {
             latitude,
@@ -739,6 +741,27 @@
     function beginLocationFlow(nextStep = "review") {
       if (!profileSaved) {
         playerInput.focus();
+        return;
+      }
+
+      if (locationApproved) {
+        requestLocationAndContinue(nextStep);
+        return;
+      }
+
+      if (navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: "geolocation" })
+          .then((result) => {
+            if (result.state === "granted") {
+              locationApproved = true;
+              requestLocationAndContinue(nextStep);
+            } else {
+              requestLocationAndContinue(nextStep);
+            }
+          })
+          .catch(() => {
+            requestLocationAndContinue(nextStep);
+          });
         return;
       }
 
