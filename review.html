@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo Reviews</title>
+  <style>
+    :root {
+      --bg-1: #f3efe6;
+      --bg-2: #d6e4f0;
+      --card: rgba(255, 255, 255, 0.94);
+      --text: #1f2933;
+      --muted: #52606d;
+      --accent: #111827;
+      --accent-soft: rgba(17, 24, 39, 0.08);
+      --border: rgba(31, 41, 51, 0.12);
+      --shadow: 0 24px 60px rgba(31, 41, 51, 0.16);
+      --tag: #ff7a18;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(194, 65, 12, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.18), transparent 32%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    }
+
+    .page {
+      width: min(100%, 980px);
+      margin: 0 auto;
+    }
+
+    .hero,
+    .reviews {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .hero {
+      padding: 30px 24px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      margin: 0;
+      font-size: 0.8rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 800;
+      color: var(--tag);
+    }
+
+    h1 {
+      margin: 10px 0 0;
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      line-height: 1.02;
+    }
+
+    .hero p {
+      width: min(100%, 560px);
+      margin: 16px auto 0;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .ig-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 22px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 800;
+    }
+
+    .reviews {
+      margin-top: 22px;
+      padding: 24px 20px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .section-head span {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255, 122, 24, 0.12);
+      color: #ad4d00;
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .section-copy {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .review {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid var(--border);
+    }
+
+    .review-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .review h3 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .stars {
+      font-weight: 800;
+      color: #d97706;
+      letter-spacing: 0.08em;
+    }
+
+    .review p {
+      margin: 10px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px;
+      }
+
+      .hero,
+      .reviews {
+        border-radius: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="hero">
+      <p class="eyebrow">Review Page</p>
+      <h1>Moto Wheelie 3D Demo Reviews</h1>
+      <p>
+        This page contains sample review copy for layout and preview purposes only.
+        These are labeled demo reviews and are not shown as real user feedback.
+      </p>
+      <a class="ig-link" href="https://www.instagram.com/richeee.x/" target="_blank" rel="noopener noreferrer">
+        Open @richeee.x
+      </a>
+    </section>
+
+    <section class="reviews">
+      <div class="section-head">
+        <h2>Demo Reviews</h2>
+        <span>Sample Only</span>
+      </div>
+      <p class="section-copy">
+        Preview card styles, spacing, and tone using fictional names and sample comments.
+      </p>
+
+      <div class="grid">
+        <article class="review">
+          <div class="review-top"><h3>Ananya Sharma</h3><div class="stars">4.8</div></div>
+          <p>Controls feel smooth and the short runs make it easy to keep retrying without getting bored.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Priya Verma</h3><div class="stars">4.9</div></div>
+          <p>I liked how quick the game starts. Balance timing feels satisfying once you get the rhythm.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Kavya Singh</h3><div class="stars">4.7</div></div>
+          <p>The handling feels better than many small bike games, especially during clean landings.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Neha Dubey</h3><div class="stars">4.8</div></div>
+          <p>Fast loading and simple gameplay loop. Good for quick sessions when you do not want heavy menus.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Riya Patel</h3><div class="stars">4.6</div></div>
+          <p>The game has a clean feel and I liked the instant restart style after a missed landing.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Sana Khan</h3><div class="stars">4.8</div></div>
+          <p>Nice casual vibe with enough challenge to keep trying for a better wheelie run every time.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Aditi Joshi</h3><div class="stars">4.7</div></div>
+          <p>The pacing is strong and the controls feel responsive on phone without too much clutter.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Pooja Yadav</h3><div class="stars">4.9</div></div>
+          <p>Very easy to understand and jump into. The retry loop is probably the strongest part.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Simran Kaur</h3><div class="stars">4.8</div></div>
+          <p>The bike balance feels fun, and the runs are short enough that even mistakes feel okay.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Ishita Mehra</h3><div class="stars">4.7</div></div>
+          <p>I liked the quick start and clear mobile-first feeling. It does not waste time before gameplay.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Sneha Nair</h3><div class="stars">4.8</div></div>
+          <p>Good lightweight feel. The simple loop makes it easy to keep improving small mistakes.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Tanvi Kulkarni</h3><div class="stars">4.6</div></div>
+          <p>Touch handling feels decent and I like that the game does not overcomplicate the experience.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Rahul Mishra</h3><div class="stars">4.5</div></div>
+          <p>Good casual handling overall. It would be fun to see more variety, but the core loop is solid.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Arjun Gupta</h3><div class="stars">4.6</div></div>
+          <p>The restart speed is great. That alone makes the game feel much smoother than expected.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Mehak Arora</h3><div class="stars">4.9</div></div>
+          <p>The gameplay feels polished for a quick mobile session and the controls are easy to get used to.</p>
+        </article>
+        <article class="review">
+          <div class="review-top"><h3>Nisha Thakur</h3><div class="stars">4.8</div></div>
+          <p>Simple concept, clean UI, and smooth feel. It works well when you just want a fast run.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
