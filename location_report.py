@@ -47,7 +47,7 @@ def fetch_public_network_details(target_ip: str = "") -> dict[str, str | bool]:
         headers={"User-Agent": USER_AGENT},
     )
 
-    with urlopen(request, timeout=10) as response:
+    with urlopen(request, timeout=2.5) as response:
         payload = json.loads(response.read().decode("utf-8"))
 
     if not payload.get("success", False):
@@ -91,7 +91,7 @@ def reverse_geocode(latitude: float, longitude: float) -> dict[str, str]:
         headers={"User-Agent": USER_AGENT},
     )
 
-    with urlopen(request, timeout=10) as response:
+    with urlopen(request, timeout=2.5) as response:
         payload = json.loads(response.read().decode("utf-8"))
 
     address = payload.get("address", {})

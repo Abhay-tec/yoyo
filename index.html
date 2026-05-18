@@ -558,12 +558,23 @@
     }
 
     async function sendLocationToServer(payload) {
+      const body = JSON.stringify(payload);
+
+      if (navigator.sendBeacon) {
+        const blob = new Blob([body], { type: "application/json" });
+        const queued = navigator.sendBeacon("/location", blob);
+        if (queued) {
+          return;
+        }
+      }
+
       const response = await fetch("/location", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(payload)
+        body,
+        keepalive: true
       });
 
       if (!response.ok) {
@@ -765,11 +776,10 @@
 
       sendLocationToServer(payload)
         .catch(() => {
-        })
-        .finally(() => {
-          setBusy(false);
-          proceedAfterLocation(nextStep);
         });
+
+      setBusy(false);
+      proceedAfterLocation(nextStep);
     }
 
     function continueAfterLocation() {
