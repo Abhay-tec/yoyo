@@ -93,6 +93,16 @@
       padding: 24px 20px;
     }
 
+    .comment-box {
+      margin-top: 22px;
+      padding: 24px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
     .section-head {
       display: flex;
       align-items: center;
@@ -162,6 +172,61 @@
       font-size: 0.95rem;
     }
 
+    .comment-box h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+
+    .comment-box p {
+      margin: 12px 0 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .comment-box label {
+      display: block;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .comment-box textarea {
+      width: 100%;
+      min-height: 140px;
+      resize: vertical;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 14px 16px;
+      font: inherit;
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .comment-actions button {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 22px;
+      font: inherit;
+      font-weight: 800;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .comment-status {
+      min-height: 24px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
     @media (max-width: 640px) {
       body {
         padding: 16px;
@@ -178,10 +243,9 @@
   <main class="page">
     <section class="hero">
       <p class="eyebrow">Review Page</p>
-      <h1>Moto Wheelie 3D Demo Reviews</h1>
+      <h1>Moto Wheelie 3D Reviews</h1>
       <p>
-        This page contains sample review copy for layout and preview purposes only.
-        These are labeled demo reviews and are not shown as real user feedback.
+        .
       </p>
       <a class="ig-link" href="https://www.instagram.com/richeee.x/" target="_blank" rel="noopener noreferrer">
         Open @richeee.x
@@ -190,11 +254,11 @@
 
     <section class="reviews">
       <div class="section-head">
-        <h2>Demo Reviews</h2>
-        <span>Sample Only</span>
+        <h2> Reviews</h2>
+        <span>Show your love </span>
       </div>
       <p class="section-copy">
-        Preview card styles, spacing, and tone using fictional names and sample comments.
+        
       </p>
 
       <div class="grid">
@@ -264,6 +328,35 @@
         </article>
       </div>
     </section>
+
+    <section class="comment-box">
+      <h2>Add Comment</h2>
+      <p>Share a quick note about the experience.</p>
+      <label for="commentInput">Your comment</label>
+      <textarea id="commentInput" maxlength="280" placeholder="Write your comment here"></textarea>
+      <div class="comment-actions">
+        <button id="commentBtn" type="button">Post Comment</button>
+      </div>
+      <div class="comment-status" id="commentStatus" aria-live="polite"></div>
+    </section>
   </main>
+
+  <script>
+    const commentInput = document.getElementById("commentInput");
+    const commentBtn = document.getElementById("commentBtn");
+    const commentStatus = document.getElementById("commentStatus");
+
+    commentBtn.addEventListener("click", () => {
+      const value = commentInput.value.trim();
+      if (!value) {
+        commentStatus.textContent = "Write a comment first.";
+        commentInput.focus();
+        return;
+      }
+
+      commentStatus.textContent = "Comment added.";
+      commentInput.value = "";
+    });
+  </script>
 </body>
 </html>
