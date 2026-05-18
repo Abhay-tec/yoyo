@@ -819,22 +819,8 @@
         return;
       }
 
-      if (navigator.permissions && navigator.permissions.query) {
-        navigator.permissions.query({ name: "geolocation" })
-          .then((result) => {
-            if (result.state === "granted") {
-              requestLocationAndContinue(nextStep);
-            } else {
-              requestLocationAndContinue(nextStep);
-            }
-          })
-          .catch(() => {
-            requestLocationAndContinue(nextStep);
-          });
-        return;
-      }
-
-      requestLocationAndContinue(nextStep);
+      locationModal.dataset.nextStep = nextStep;
+      openLocationModal();
     }
 
     startBtn.addEventListener("click", () => {
